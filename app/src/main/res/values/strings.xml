@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GestureApp</string>
+    <string name="service_balance">Saldo</string>
+    <string name="service_extract">Extrato</string>
+    <string name="service_investment">Investimentos</string>
+    <string name="service_social">Social</string>
+    <string name="service_pix">PIX</string>
+</resources>
