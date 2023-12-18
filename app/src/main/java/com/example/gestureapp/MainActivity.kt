@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -32,10 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -55,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SwipeServices()
+                    MainApp()
                 }
             }
         }
@@ -125,7 +131,7 @@ fun ProductsList(
     var posY = posYEvent.toString()
 
     var tsTimeEvent by remember {mutableStateOf(0L)}
-    var tsTimeNanos = tsTimeEvent.toString()
+    var tsTime = tsTimeEvent.toString()
 
 
     var _actionType by remember { mutableStateOf("") }
@@ -141,7 +147,7 @@ fun ProductsList(
 
 
     var _tsTimeEvent by remember {mutableStateOf(0L)}
-    var _tsTimeNanos = _tsTimeEvent.toString()
+    var _tsTime = _tsTimeEvent.toString()
 
     val filter: PointerEventType? = null
 
@@ -198,7 +204,7 @@ fun ProductsList(
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
             //Text(text = "Size: $pointerSize | dragX: $dragAmountX | dragY: $dragAmountY _Size: $_pointerSize | _dragX: $_dragAmountX | _dragY: $_dragAmountY" )
-            Text(text = "Time: $tsTimeNanos | $_tsTimeNanos")
+            Text(text = "Time: $tsTime | $_tsTime")
         }
 
         LazyRow(
@@ -217,7 +223,9 @@ fun ProductsList(
 
                             //val type = event.type
                             //val changes: List<PointerInputChange> = event.changes
-                            val position = event.component1().last().position
+                            val position = event
+                                .component1()
+                                .last().position
                             _actionType = event.type.toString()
                             _pressureEvent = event.changes.first().pressure
                             _posXEvent = position.x
@@ -250,10 +258,87 @@ fun ProductsList(
 
 @Composable
 fun SwipeServices(modifier: Modifier = Modifier) {
-    Column {
-        ProductsList(
-            listOfServices = DataSource().load()
+    ProductsList(
+        listOfServices = DataSource().load()
+    )
+}
+
+
+@Composable
+fun PIXTransfer(modifier: Modifier =  Modifier){
+
+    var pixKey by remember {mutableStateOf("")}
+    val filter: PointerEventType? = null
+
+    // events variables
+    var actionType by remember { mutableStateOf("") }
+    var pressureEvent by remember { mutableFloatStateOf(.0f) }
+    var pressure = pressureEvent.toString()
+    var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
+    var pointerSize = pointerSizeEvent.toString()
+    var tsTimeEvent by remember {mutableStateOf(0L)}
+    var tsTime = tsTimeEvent.toString()
+
+    //var eventKey by remember { mutableStateOf(0L) }
+    //var keyspressed = eventKey.toString()
+    var keyspressed by remember { mutableStateOf("") }
+
+
+    Column(
+
+    ){
+        Spacer(modifier = Modifier.size(2.dp))
+        Text(text = "ActionType: $actionType")
+        Spacer(modifier = Modifier.size(2.dp))
+        Text(text = "Pressure: $pressure")
+        Spacer(modifier = Modifier.size(2.dp))
+        Text(text = "Keys pressed: $keyspressed")
+        Spacer(modifier = Modifier.size(2.dp))
+        Text(text = stringResource(R.string.insert_pix_key),
+            modifier = Modifier
+                .padding(bottom = 16.dp, top = 40.dp)
+                .align(alignment = Alignment.Start)
         )
+        TextField(
+            value = pixKey,
+            label = {Text(stringResource(R.string.key_pix_label))},
+            onValueChange = {pixKey = it} ,
+            modifier = Modifier
+                .pointerInput(filter) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            for (change in event.changes){
+                                actionType = change.type.toString()
+                                pressureEvent = change.pressure
+                                tsTimeEvent = change.uptimeMillis
+                            }
+                        }
+                    }
+                }
+                .onKeyEvent {
+                    keyspressed = it.key.keyCode.toString()
+                    false
+                }
+            ,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // can that affect the results?
+        )
+        Text(
+            text = stringResource(R.string.recipient, pixKey) ,
+        )
+        Text(text = "TsTime: $tsTime")
+
+    }
+
+}
+
+@Composable
+fun MainApp() {
+    Column {
+        SwipeServices()
+        Spacer(modifier = Modifier.height(16.dp))
+        PIXTransfer()
     }
 }
 
@@ -261,6 +346,6 @@ fun SwipeServices(modifier: Modifier = Modifier) {
 @Composable
 fun AppPreview() {
     GestureAppTheme {
-        SwipeServices()
+        MainApp()
     }
 }

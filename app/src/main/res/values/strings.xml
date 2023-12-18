@@ -5,4 +5,7 @@
     <string name="service_investment">Investimentos</string>
     <string name="service_social">Social</string>
     <string name="service_pix">PIX</string>
+    <string name="insert_pix_key">Transferência PIX:</string>
+    <string name="recipient">Destinatário: %1$s</string>
+    <string name="key_pix_label">Chave PIX</string>
 </resources>
