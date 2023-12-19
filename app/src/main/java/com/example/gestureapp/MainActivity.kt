@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,19 +46,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import com.example.gestureapp.data.ActionTypeEnum
 import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.data.AppSection
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.theme.GestureAppTheme
+import java.util.UUID
 
 class MainActivity : ComponentActivity(){
 
-    lateinit var appSensorManager: AppSensorManager
+    lateinit var appSensorManager: AppSensorManager //TODO a manager for each watching place
+    val uuid: UUID =  AppSection.uui
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        this.appSensorManager = AppSensorManager(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+        this.appSensorManager = AppSensorManager(
+            getSystemService(
+                Context.SENSOR_SERVICE) as SensorManager,
+                ActionTypeEnum.HORIZONTAL_SWIPE)
 
         setContent {
             GestureAppTheme {
@@ -66,7 +74,7 @@ class MainActivity : ComponentActivity(){
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainApp()
+                    MainApp(appSensorManager)
                 }
             }
         }
@@ -74,7 +82,7 @@ class MainActivity : ComponentActivity(){
 
     override fun onResume() {
         super.onResume()
-        this.appSensorManager.active()
+        //this.appSensorManager.active()
     }
     override fun onPause() {
         super.onPause()
@@ -85,7 +93,6 @@ class MainActivity : ComponentActivity(){
         this.appSensorManager.active(false)
     }
 }
-
 
 @Composable
 fun ProductItem(
@@ -133,11 +140,11 @@ fun ProductItem(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductsList(
+    appSensorManager: AppSensorManager,
     listOfServices: List<BankProductItem>,
     modifier: Modifier = Modifier
 ){
-    //val state = rememberLazyListState()
-    //val showSrollToTopButton by remember{drivedStateOf{state.firstVisibleItemIndex>0}}
+
     var actionType by remember { mutableStateOf("") }
     var pressureEvent by remember { mutableFloatStateOf(.0f) }
     var pressure = pressureEvent.toString()
@@ -202,6 +209,7 @@ fun ProductsList(
                 touchMajorEvent = it.touchMajor
                 tsTimeEvent = it.eventTime
                 tsDownTimeEvent = it.downTime
+
                 false
 
             }
@@ -213,26 +221,21 @@ fun ProductsList(
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
             Text(text = "Pressure: $pressure | $_pressure")
-
         }
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
             Text(text = "PosX: $posX | $_posX")
-
         }
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
             Text(text = "PosY: $posY  | $_posY")
-
         }
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
-            //Text(text = "Size: $pointerSize | dragX: $dragAmountX | dragY: $dragAmountY _Size: $_pointerSize | _dragX: $_dragAmountX | _dragY: $_dragAmountY" )
             Text(text = "Size: $pointerSize | $_pointerSize")
         }
         Spacer(modifier = Modifier.size(2.dp))
         Row(){
-            //Text(text = "Size: $pointerSize | dragX: $dragAmountX | dragY: $dragAmountY _Size: $_pointerSize | _dragX: $_dragAmountX | _dragY: $_dragAmountY" )
             Text(text = "Time: $tsTime | $_tsTime")
         }
 
@@ -242,38 +245,43 @@ fun ProductsList(
                 .pointerInput(filter) {
 
                     awaitPointerEventScope {
+
                         while (true) {
+
                             _pointerSizeEvent = size.toSize().height * size.toSize().width // Wrong!
                             val event = awaitPointerEvent()
                             // handle pointer event
                             //if (filter == null || event.type == filter) {
 
-                            //_pointerSizeEvent = event.changes.first().previousPosition.x
-                            //val valueTest = event.changes.first().previousPosition.x
-                            //Log.i("FIRED","${event.type}, ${valueTest.toString()}")
-
                             for (change in event.changes) {
+
+                                if(!appSensorManager.activated){
+                                    appSensorManager.active()
+                                }
 
                                 val position = change.position
                                 _posXEvent = position.x
                                 _posYEvent = position.y
-                                _pointerSizeEvent = change.previousPosition.x
+                                //_pointerSizeEvent = change.previousPosition.x
                                 _actionType = change.type.toString()
                                 _pressureEvent = change.pressure
                                 _tsTimeEvent = change.uptimeMillis
 
+                                if (!change.pressed){
+                                    appSensorManager.active(false)
+                                    //Log.i("POINTER_INPUT", "NO LONGER PRESSED")
+                                }
+
                                 Log.i(
-                                    "POSITIONS",
-                                    "${_pointerSizeEvent.toString()} > ${_posXEvent.toString()} "
+                                    "POINTER_INPUT",
+                                    "${_pointerSizeEvent.toString()} > ${_posXEvent.toString()}"
                                 )
-
                             }
-
-                            //_pointerSizeEvent = event.calculateCentroidSize(true)
-
                         }
+
                     }
                 }
+
 
         ){
             items(listOfServices){
@@ -290,12 +298,13 @@ fun ProductsList(
 }
 
 @Composable
-fun SwipeServices(modifier: Modifier = Modifier) {
+fun HorizontalProducts(appSensorManager: AppSensorManager, modifier: Modifier = Modifier) {
+
     ProductsList(
+        appSensorManager,
         listOfServices = DataSource().load()
     )
 }
-
 
 @Composable
 fun PIXTransfer(modifier: Modifier =  Modifier){
@@ -309,13 +318,9 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
     var pressure = pressureEvent.toString()
     var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
     var pointerSize = pointerSizeEvent.toString()
-    var tsTimeEvent by remember {mutableStateOf(0L)}
+    var tsTimeEvent by remember { mutableLongStateOf(0L) }
     var tsTime = tsTimeEvent.toString()
-
-    //var eventKey by remember { mutableStateOf(0L) }
-    //var keyspressed = eventKey.toString()
     var keysPressed by remember { mutableStateOf("") }
-
 
     Column(
 
@@ -369,9 +374,10 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
 }
 
 @Composable
-fun MainApp() {
+fun MainApp(appSensorManager: AppSensorManager) {
     Column {
-        SwipeServices()
+        Text(text="Serviços")
+        HorizontalProducts(appSensorManager)
         Spacer(modifier = Modifier.height(8.dp))
         PIXTransfer()
     }
@@ -381,6 +387,6 @@ fun MainApp() {
 @Composable
 fun AppPreview() {
     GestureAppTheme {
-        MainApp()
+        //MainApp()
     }
 }
