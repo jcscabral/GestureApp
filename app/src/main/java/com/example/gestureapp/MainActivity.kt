@@ -1,5 +1,6 @@
 package com.example.gestureapp
-
+import android.content.Context
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -34,9 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
@@ -46,13 +46,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.gestureapp.data.DataSource
-import com.example.gestureapp.model.BankService
+import com.example.gestureapp.model.BankProductItem
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.theme.GestureAppTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(){
+
+    lateinit var appSensorManager: AppSensorManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        this.appSensorManager = AppSensorManager(getSystemService(Context.SENSOR_SERVICE) as SensorManager)
 
         setContent {
             GestureAppTheme {
@@ -65,6 +70,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        this.appSensorManager.active()
+    }
+    override fun onPause() {
+        super.onPause()
+        this.appSensorManager.active(false)
+    }
+    override fun onStop() {
+        super.onStop()
+        this.appSensorManager.active(false)
     }
 }
 
@@ -81,13 +99,13 @@ fun ProductItem(
             .fillMaxWidth()
     ){
 
-        var numberOfTouches by remember { mutableIntStateOf(0) }
-        var touches = numberOfTouches.toString()
-
         Column {
+
+            var numberOfTouches by remember { mutableIntStateOf(0) }
+            var touches = numberOfTouches.toString()
+
             Button(
                 onClick = {
-                    //Toast.makeText(context, "This is the way, bro!", Toast.LENGTH_LONG)
                     numberOfTouches++
                     Log.i("ONCLICK", numberOfTouches.toString())
                 },
@@ -115,10 +133,11 @@ fun ProductItem(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductsList(
-    listOfServices: List<BankService>,
+    listOfServices: List<BankProductItem>,
     modifier: Modifier = Modifier
 ){
-
+    //val state = rememberLazyListState()
+    //val showSrollToTopButton by remember{drivedStateOf{state.firstVisibleItemIndex>0}}
     var actionType by remember { mutableStateOf("") }
     var pressureEvent by remember { mutableFloatStateOf(.0f) }
     var pressure = pressureEvent.toString()
@@ -130,8 +149,16 @@ fun ProductsList(
     var posYEvent by remember { mutableFloatStateOf(.0f) }
     var posY = posYEvent.toString()
 
+    //TODO display
+    var touchMinorEvent by remember { mutableFloatStateOf(.0f) }
+    var touchMinor = touchMinorEvent.toString()
+    var touchMajorEvent by remember { mutableFloatStateOf(.0f) }
+    var touchMajor = touchMajorEvent.toString()
+
     var tsTimeEvent by remember {mutableStateOf(0L)}
     var tsTime = tsTimeEvent.toString()
+    var tsDownTimeEvent by remember {mutableStateOf(0L)}
+    var tsDownTime = tsDownTimeEvent.toString()
 
 
     var _actionType by remember { mutableStateOf("") }
@@ -150,7 +177,6 @@ fun ProductsList(
     var _tsTime = _tsTimeEvent.toString()
 
     val filter: PointerEventType? = null
-
 
     Column(
         modifier = Modifier
@@ -172,7 +198,10 @@ fun ProductsList(
                 pointerSizeEvent = it.size
                 posXEvent = it.x
                 posYEvent =  it.y
+                touchMinorEvent = it.touchMinor
+                touchMajorEvent = it.touchMajor
                 tsTimeEvent = it.eventTime
+                tsDownTimeEvent = it.downTime
                 false
 
             }
@@ -219,25 +248,29 @@ fun ProductsList(
                             // handle pointer event
                             //if (filter == null || event.type == filter) {
 
-                            // TODO axisXY and Size of touch (from MotionEvent)
+                            //_pointerSizeEvent = event.changes.first().previousPosition.x
+                            //val valueTest = event.changes.first().previousPosition.x
+                            //Log.i("FIRED","${event.type}, ${valueTest.toString()}")
 
-                            //val type = event.type
-                            //val changes: List<PointerInputChange> = event.changes
-                            val position = event
-                                .component1()
-                                .last().position
-                            _actionType = event.type.toString()
-                            _pressureEvent = event.changes.first().pressure
-                            _posXEvent = position.x
-                            _posYEvent = position.y
-                            _tsTimeEvent = event.changes.first().uptimeMillis
+                            for (change in event.changes) {
 
-                            //Log.i("FIRED","${event.type}, ${event.changes.first().position}")
+                                val position = change.position
+                                _posXEvent = position.x
+                                _posYEvent = position.y
+                                _pointerSizeEvent = change.previousPosition.x
+                                _actionType = change.type.toString()
+                                _pressureEvent = change.pressure
+                                _tsTimeEvent = change.uptimeMillis
 
-//                            for (change in event.changes){
-//                                Log.i("FIRED", "${change.position} | ${change.pressure}")
-//                            }
-                            //}
+                                Log.i(
+                                    "POSITIONS",
+                                    "${_pointerSizeEvent.toString()} > ${_posXEvent.toString()} "
+                                )
+
+                            }
+
+                            //_pointerSizeEvent = event.calculateCentroidSize(true)
+
                         }
                     }
                 }
@@ -281,7 +314,7 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
 
     //var eventKey by remember { mutableStateOf(0L) }
     //var keyspressed = eventKey.toString()
-    var keyspressed by remember { mutableStateOf("") }
+    var keysPressed by remember { mutableStateOf("") }
 
 
     Column(
@@ -292,13 +325,14 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
         Spacer(modifier = Modifier.size(2.dp))
         Text(text = "Pressure: $pressure")
         Spacer(modifier = Modifier.size(2.dp))
-        Text(text = "Keys pressed: $keyspressed")
+        Text(text = "Keys pressed: $keysPressed")
         Spacer(modifier = Modifier.size(2.dp))
         Text(text = stringResource(R.string.insert_pix_key),
             modifier = Modifier
                 .padding(bottom = 16.dp, top = 40.dp)
                 .align(alignment = Alignment.Start)
         )
+        Text(text = "TsTime: $tsTime")
         TextField(
             value = pixKey,
             label = {Text(stringResource(R.string.key_pix_label))},
@@ -308,7 +342,7 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent()
-                            for (change in event.changes){
+                            for (change in event.changes) {
                                 actionType = change.type.toString()
                                 pressureEvent = change.pressure
                                 tsTimeEvent = change.uptimeMillis
@@ -317,7 +351,9 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
                     }
                 }
                 .onKeyEvent {
-                    keyspressed = it.key.keyCode.toString()
+                    keysPressed += it.utf16CodePoint
+                        .toChar()
+                        .toString() // TODO handle BACKSPACE?
                     false
                 }
             ,
@@ -327,7 +363,6 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
         Text(
             text = stringResource(R.string.recipient, pixKey) ,
         )
-        Text(text = "TsTime: $tsTime")
 
     }
 
@@ -337,7 +372,7 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
 fun MainApp() {
     Column {
         SwipeServices()
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         PIXTransfer()
     }
 }
