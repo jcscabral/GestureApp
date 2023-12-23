@@ -2,9 +2,8 @@ package com.example.gestureapp.model
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import com.example.gestureapp.data.ActionTypeEnum
-import java.util.UUID
 
-class AppSensorManager{
+class ComponentSensorManager{
 
     private lateinit var magneticSensor: Sensor
     private lateinit var acceleromterSensor: Sensor

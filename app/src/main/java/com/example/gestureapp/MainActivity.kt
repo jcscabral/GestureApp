@@ -50,31 +50,47 @@ import com.example.gestureapp.data.ActionTypeEnum
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.AppSection
 import com.example.gestureapp.model.BankProductItem
-import com.example.gestureapp.model.AppSensorManager
+import com.example.gestureapp.model.ComponentSensorManager
 import com.example.gestureapp.ui.theme.GestureAppTheme
 import java.util.UUID
 
+
 class MainActivity : ComponentActivity(){
 
-    lateinit var appSensorManager: AppSensorManager //TODO a manager for each watching place
-    val uuid: UUID =  AppSection.uui
+    lateinit var swipeSensorManager: ComponentSensorManager
+    lateinit var buttonSensorManager: ComponentSensorManager
+    lateinit var keyboardSensorManager: ComponentSensorManager
+
+    val uuid: UUID =  AppSection.sectionId
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        this.appSensorManager = AppSensorManager(
+        this.swipeSensorManager = ComponentSensorManager(
             getSystemService(
                 Context.SENSOR_SERVICE) as SensorManager,
                 ActionTypeEnum.HORIZONTAL_SWIPE)
 
+        this.buttonSensorManager = ComponentSensorManager(
+            getSystemService(
+                Context.SENSOR_SERVICE) as SensorManager,
+                ActionTypeEnum.BUTTON_PRESS)
+
+        this.keyboardSensorManager = ComponentSensorManager(
+            getSystemService(
+                Context.SENSOR_SERVICE) as SensorManager,
+            ActionTypeEnum.KEYBOARD_TYPING)
+
         setContent {
             GestureAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainApp(appSensorManager)
+                    MainApp(
+                        swipeSensorManager,
+                        buttonSensorManager,
+                        keyboardSensorManager)
                 }
             }
         }
@@ -86,16 +102,21 @@ class MainActivity : ComponentActivity(){
     }
     override fun onPause() {
         super.onPause()
-        this.appSensorManager.active(false)
+        this.swipeSensorManager.active(false)
+        this.buttonSensorManager.active(false)
+        this.keyboardSensorManager.active(false)
     }
     override fun onStop() {
         super.onStop()
-        this.appSensorManager.active(false)
+        this.swipeSensorManager.active(false)
+        this.buttonSensorManager.active(false)
+        this.keyboardSensorManager.active(false)
     }
 }
 
 @Composable
 fun ProductItem(
+    buttonSensorManager: ComponentSensorManager? =  null,
     nameId: Int,
     imageVector: ImageVector,
     modifier: Modifier
@@ -111,11 +132,45 @@ fun ProductItem(
             var numberOfTouches by remember { mutableIntStateOf(0) }
             var touches = numberOfTouches.toString()
 
+            // events variables
+            var actionType by remember { mutableStateOf("") }
+            var pressureEvent by remember { mutableFloatStateOf(.0f) }
+            var pressure = pressureEvent.toString()
+            var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
+            var pointerSize = pointerSizeEvent.toString()
+            var tsTimeEvent by remember { mutableLongStateOf(0L) }
+            var tsTime = tsTimeEvent.toString()
+            var keysPressed by remember { mutableStateOf("") }
+
             Button(
                 onClick = {
+                    // TODO call new activate
                     numberOfTouches++
                     Log.i("ONCLICK", numberOfTouches.toString())
                 },
+                modifier = Modifier
+                    .pointerInput(Unit) {
+                        if(buttonSensorManager!=null){
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    for (change in event.changes) {
+                                        if (!buttonSensorManager.activated!!) {
+                                            buttonSensorManager.active()
+                                        }
+                                        actionType = change.type.toString()
+                                        pressureEvent = change.pressure
+                                        tsTimeEvent = change.uptimeMillis
+                                        if (!change.pressed) {
+                                            buttonSensorManager.active(false)
+                                        }
+                                        Log.i("ONCLICK_POINTER_SCOPE", "$actionType - $pressureEvent - $tsTimeEvent")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
             ) {
                 Icon(
@@ -140,7 +195,8 @@ fun ProductItem(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductsList(
-    appSensorManager: AppSensorManager,
+    swipeSensorManager: ComponentSensorManager,
+    buttonSensorManager: ComponentSensorManager,
     listOfServices: List<BankProductItem>,
     modifier: Modifier = Modifier
 ){
@@ -156,7 +212,6 @@ fun ProductsList(
     var posYEvent by remember { mutableFloatStateOf(.0f) }
     var posY = posYEvent.toString()
 
-    //TODO display
     var touchMinorEvent by remember { mutableFloatStateOf(.0f) }
     var touchMinor = touchMinorEvent.toString()
     var touchMajorEvent by remember { mutableFloatStateOf(.0f) }
@@ -255,8 +310,8 @@ fun ProductsList(
 
                             for (change in event.changes) {
 
-                                if(!appSensorManager.activated){
-                                    appSensorManager.active()
+                                if (!swipeSensorManager.activated) {
+                                    swipeSensorManager.active()
                                 }
 
                                 val position = change.position
@@ -267,8 +322,8 @@ fun ProductsList(
                                 _pressureEvent = change.pressure
                                 _tsTimeEvent = change.uptimeMillis
 
-                                if (!change.pressed){
-                                    appSensorManager.active(false)
+                                if (!change.pressed) {
+                                    swipeSensorManager.active(false)
                                     //Log.i("POINTER_INPUT", "NO LONGER PRESSED")
                                 }
 
@@ -287,6 +342,7 @@ fun ProductsList(
             items(listOfServices){
                 Column(horizontalAlignment = Alignment.CenterHorizontally){
                     ProductItem(
+                        buttonSensorManager = if(it.nameId == R.string.service_pix) buttonSensorManager else null ,
                         nameId = it.nameId,
                         imageVector = it.imageIcon ,
                         modifier = modifier
@@ -298,17 +354,21 @@ fun ProductsList(
 }
 
 @Composable
-fun HorizontalProducts(appSensorManager: AppSensorManager, modifier: Modifier = Modifier) {
-
+fun HorizontalProducts(swipeSensorManager: ComponentSensorManager,
+                       buttonSensorManager: ComponentSensorManager,
+                       modifier: Modifier = Modifier) {
     ProductsList(
-        appSensorManager,
+        swipeSensorManager,
+        buttonSensorManager,
         listOfServices = DataSource().load()
     )
 }
 
+//TODO chamar outra activity
 @Composable
-fun PIXTransfer(modifier: Modifier =  Modifier){
-
+fun PIXTransfer(keyboardSensorManager: ComponentSensorManager,
+                modifier: Modifier =  Modifier){
+    // TODO implement keyboardSensorManager
     var pixKey by remember {mutableStateOf("")}
     val filter: PointerEventType? = null
 
@@ -348,17 +408,29 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
                         while (true) {
                             val event = awaitPointerEvent()
                             for (change in event.changes) {
+                                if (!keyboardSensorManager.activated) {
+                                    keyboardSensorManager.active()
+                                }
+
                                 actionType = change.type.toString()
                                 pressureEvent = change.pressure
                                 tsTimeEvent = change.uptimeMillis
+
+                                if (!change.pressed) {
+                                    keyboardSensorManager.active(false)
+                                }
+                                Log.i("KEYBOARD", "$actionType - $pressureEvent - $tsTimeEvent")
                             }
+
                         }
                     }
                 }
                 .onKeyEvent {
-                    keysPressed += it.utf16CodePoint
+                    val keyUtf16 = it.utf16CodePoint
+                    keysPressed += keyUtf16
                         .toChar()
-                        .toString() // TODO handle BACKSPACE?
+                        .toString()
+                    Log.i("KEYBOARD", "Key pressed:${keyUtf16.toString()}")
                     false
                 }
             ,
@@ -374,12 +446,15 @@ fun PIXTransfer(modifier: Modifier =  Modifier){
 }
 
 @Composable
-fun MainApp(appSensorManager: AppSensorManager) {
+fun MainApp(
+    swipeSensorManager: ComponentSensorManager,
+    buttonSensorManager: ComponentSensorManager,
+    keyboardSensorManager: ComponentSensorManager) {
     Column {
-        Text(text="Serviços")
-        HorizontalProducts(appSensorManager)
+        Text(text="Serviços") //TODO think of design
+        HorizontalProducts(swipeSensorManager, buttonSensorManager)
         Spacer(modifier = Modifier.height(8.dp))
-        PIXTransfer()
+        PIXTransfer(keyboardSensorManager)
     }
 }
 

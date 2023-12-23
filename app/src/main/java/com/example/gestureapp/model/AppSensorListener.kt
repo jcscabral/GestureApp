@@ -28,27 +28,27 @@ class AppSensorListener: SensorEventListener {
 
         if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
             val v = event?.values?.get(0)
-            Log.i("MAGNETIC", "Uuid: ${AppSection.uui} - Type: $actionTypeEnum - Values: $event")
+            Log.i("MAGNETIC", "Uuid: ${AppSection.sectionId} - Type: $actionTypeEnum - Values: $event")
         }
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
             val v = event?.values?.get(0)
-            Log.i("ACCELEROMETER", "Uuid: ${AppSection.uui} - Type: $actionTypeEnum - Values: $event")
+            Log.i("ACCELEROMETER", "Uuid: ${AppSection.sectionId} - Type: $actionTypeEnum - Values: $event")
         }
         if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE) {
             val v = event?.values?.get(0)
-            Log.i("GYROSCOPE", "Uuid: ${AppSection.uui} - Type: $actionTypeEnum - Values: $event")
+            Log.i("GYROSCOPE", "Uuid: ${AppSection.sectionId} - Type: $actionTypeEnum - Values: $event")
         }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        Log.i("CHANGED", "Uuid: ${AppSection.uui} - SensorMonitor")
+        Log.i("CHANGED", "Uuid: ${AppSection.sectionId} - SensorMonitor")
     }
 
     fun offer(event: SensorEvent) = runBlocking{events.send(event)}
 
     fun process() = scope.launch {
         events.consumeEach {
-            Log.i("CONSUMED", "Uuid: ${AppSection.uui} - SensorMonitor")
+            Log.i("CONSUMED", "Uuid: ${AppSection.sectionId} - SensorMonitor")
         }
     }
 

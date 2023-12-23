@@ -4,6 +4,6 @@ import java.util.UUID
 
 class AppSection {
     companion object{
-        val uui = UUID.randomUUID()
+        val sectionId = UUID.randomUUID()
     }
 }
