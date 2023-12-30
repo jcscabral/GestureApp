@@ -292,11 +292,10 @@ fun HorizontalProducts(swipeSensorManager: ComponentSensorManager,
     ProductsList(
         swipeSensorManager,
         buttonSensorManager,
-        listOfServices = DataSource().load()
+        listOfServices = DataSource.bankServices
     )
 }
 
-//TODO chamar outra activity
 @Composable
 fun PIXTransfer(keyboardSensorManager: ComponentSensorManager,
                 modifier: Modifier =  Modifier

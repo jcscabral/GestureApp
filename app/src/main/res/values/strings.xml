@@ -9,11 +9,15 @@
     <string name="recipient">Destinatário: %1$s</string>
     <string name="key_pix_label">Chave PIX</string>
     <string name="app_controle">Controle da pesquisa</string>
-    <string name="app_acesso">AcessoInício</string>
+    <string name="app_acesso">Início</string>
     <string name="app_mensagem_entrada">Seu Banco é aqui</string>
     <string name="app_autenticacao">Validação</string>
     <string name="app_pix">Pix</string>
     <string name="app_fora">Ação fora da pesquisa</string>
-    <string name="password">54832190</string>
+    <string name="password">54837190</string>
+    <string name="label_usuario">Usuário</string>
+    <string name="label_idade">Idade</string>
+    <string name="button_entrar">Entrar</string>
+
 
 </resources>

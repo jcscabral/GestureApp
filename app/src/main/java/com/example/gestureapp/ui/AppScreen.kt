@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,7 +27,8 @@ import com.example.gestureapp.AppViewModelProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.ui.control.ControlScreen
 import com.example.gestureapp.ui.entry.EntryScreen
-import com.example.gestureapp.ui.entry.LoginViewModel
+import com.example.gestureapp.ui.entry.EntryViewModel
+import com.example.gestureapp.ui.home.HomeScreen
 
 
 enum class AppScreenEnum(@StringRes val title: Int){
@@ -39,7 +41,7 @@ enum class AppScreenEnum(@StringRes val title: Int){
 }
 @Composable
 fun AppScreen(
-    loginViewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    loginViewModel: EntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
@@ -74,30 +76,50 @@ fun AppScreen(
                         loginViewModel.newUiState()
                         navController.navigate(AppScreenEnum.Entry.name)
                     },
-                    allUsers =  allUsers.itemList
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(dimensionResource(R.dimen.padding_medium))
+                    allUsers =  allUsers.users,
+                    modifier
                 )
             }
             composable(route = AppScreenEnum.Entry.name) {
                 EntryScreen(
-                    isStarted =  userUiState.isStarted,
+                    //isStarted =  userUiState.isStarted,
+                    id = userUiState.id,
+                    userName = userUiState.userName,
+                    age = userUiState.age,
+                    gender = userUiState.gender,
+                    isPasswordWrong = userUiState.isPasswordWrong,
                     isRegistered = userUiState.isRegistered,
-                    onUserFinished = {
-                        loginViewModel.setIsFinished()
-                        navController.navigate(AppScreenEnum.Control.name)
+                    useOption = userUiState.useOption,
+                    onAgeValueChange = {
+                        loginViewModel.setAge(it)
+                    },
+                    onGenderClick = {
+                        loginViewModel.setGender(it)
+                    },
+                    onUserRegistered = {
+                        loginViewModel.saveUser()
+                        if (userUiState.isRegistered){
+                            loginViewModel.updateId()
+                            navController.navigate(AppScreenEnum.Control.name)
+                        }
+                    },
+                    onTrainClicked = {
+                        loginViewModel.setUseOption(it)
+                    },
+                    onLoginClicked = {
+                        if (loginViewModel.isMatched(it)){
+                            navController.navigate(AppScreenEnum.Home.name)
+                        }
                     }
-                    ,
-//                    onNewUser =  {
-//                        loginViewModel.newUiState()
-//                        //TODO goto home
-//                    }
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(dimensionResource(R.dimen.padding_medium))
                 )
             }
+//            composable(route = AppScreenEnum.Home.name) {
+//                HomeScreen(
+//                    swipeSensorManager = ,
+//                    buttonSensorManager = ,
+//                    keyboardSensorManager =
+//                )
+//            }
 
         }
 
