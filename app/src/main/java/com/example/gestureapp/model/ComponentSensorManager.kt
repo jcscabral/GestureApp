@@ -1,7 +1,7 @@
 package com.example.gestureapp.model
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import com.example.gestureapp.data.ActionTypeEnum
+import com.example.gestureapp.data.UserActionEnum
 
 class ComponentSensorManager{
 
@@ -9,12 +9,12 @@ class ComponentSensorManager{
     private lateinit var acceleromterSensor: Sensor
     private lateinit var gyroscopeSensor: Sensor
     private var sensorManager: SensorManager
-    var actionTypeEnum : ActionTypeEnum =  ActionTypeEnum.UNKNOWN
+    var actionTypeEnum : UserActionEnum =  UserActionEnum.UNKNOWN
     private lateinit var appSensorListener : AppSensorListener
     var activated = false
 
 
-    constructor(sensorManager: SensorManager, actionTypeEnum: ActionTypeEnum){
+    constructor(sensorManager: SensorManager, actionTypeEnum: UserActionEnum){
         this.actionTypeEnum = actionTypeEnum
         this.appSensorListener = AppSensorListener(actionTypeEnum)
         this.sensorManager = sensorManager

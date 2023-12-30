@@ -20,4 +20,10 @@ class DataSource {
             BankProductItem(R.string.service_pix, Icons.Rounded.DateRange)
         )
     }
+
+    val gender =  listOf(
+        "Masculino",
+        "Feminino"
+    )
 }
+

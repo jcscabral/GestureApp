@@ -8,4 +8,12 @@
     <string name="insert_pix_key">Transferência PIX:</string>
     <string name="recipient">Destinatário: %1$s</string>
     <string name="key_pix_label">Chave PIX</string>
+    <string name="app_controle">Controle da pesquisa</string>
+    <string name="app_acesso">AcessoInício</string>
+    <string name="app_mensagem_entrada">Seu Banco é aqui</string>
+    <string name="app_autenticacao">Validação</string>
+    <string name="app_pix">Pix</string>
+    <string name="app_fora">Ação fora da pesquisa</string>
+    <string name="password">54832190</string>
+
 </resources>

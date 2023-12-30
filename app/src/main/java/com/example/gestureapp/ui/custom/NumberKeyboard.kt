@@ -1,4 +1,4 @@
-package com.example.gestureapp
+package com.example.gestureapp.ui.custom
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +23,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,23 +32,22 @@ import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gestureapp.utils.moneyMask
+import kotlinx.coroutines.launch
 
 @Composable
-fun CustomKeyboard() {
-
-    var textValue = remember { mutableStateOf("0") }
-    var showSheet = remember { mutableStateOf(true) }
+fun CustomKeyboard(
+    customKeyboardViewModel: CustomKeyboardViewModel
+) {
 
     Column {
 
-        // Disable default keyboard
+        // Disable default keyboard, anyways
         CompositionLocalProvider(
             LocalTextInputService provides null
         ) {
             //  UI: just to user check his typing
             TextField(
-                value = textValue.value, //textFieldValueState,
+                value = customKeyboardViewModel.itemUiState.textValue,
                 label = { Text(text = "Valor") },
                 readOnly = true,
                 onValueChange = {
@@ -60,21 +57,24 @@ fun CustomKeyboard() {
                         awaitPointerEventScope {
                             while (true) {
                                 val event = awaitPointerEvent()
-                                showSheet.value = true
+                                customKeyboardViewModel.updateUiState(
+                                    customKeyboardViewModel.itemUiState.copy(
+                                        textValue = customKeyboardViewModel.itemUiState.textValue,
+                                        showSheet = true
+                                    )
+                                )
                                 Log.i("POINTER_INPUT", "Clicked")
                             }
                         }
                     }
                 ,
-                singleLine = true //,
-                //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // can that affect the results?
+                singleLine = true
             )
         }
         Spacer(modifier = Modifier.padding(8.dp))
         // Here we actually get the events
         ModalBottomLayout(
-            showSheet,
-            textValue
+            customKeyboardViewModel
         )
     }
 }
@@ -83,8 +83,7 @@ fun CustomKeyboard() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomLayout(
-    showSheet: MutableState<Boolean>,
-    textValue: MutableState<String>
+    customKeyboardViewModel: CustomKeyboardViewModel
 ){
     val digitList = listOf(
         "1", "2", "3", "\u232b", "4", "5", "6", "Done", "7", "8", "9", " ", " ", "0", " ", " "
@@ -95,13 +94,16 @@ fun ModalBottomLayout(
             false
         }
     )
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
     ){
-        if(showSheet.value) {
+        if(customKeyboardViewModel.itemUiState.showSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    showSheet.value = false
+                    coroutineScope.launch{
+                        customKeyboardViewModel.onDismissRequest()
+                    }
                 },
                 scrimColor = Color.Transparent,
                 tonalElevation = 5.dp,
@@ -121,8 +123,9 @@ fun ModalBottomLayout(
                         BottomActionSheetView(
                             digitList = digitList,
                             onItemClick = {
-                                    data ->
-                                textValue.value = moneyMask(data)
+                                coroutineScope.launch {
+                                    customKeyboardViewModel.onItemClick(it)
+                                }
                             }
                         )
                         Spacer(modifier = Modifier.padding(vertical = 24.dp))

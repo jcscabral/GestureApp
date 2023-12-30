@@ -4,7 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.util.Log
-import com.example.gestureapp.data.ActionTypeEnum
+import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.data.AppSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +19,9 @@ class AppSensorListener: SensorEventListener {
 
     private val scope = CoroutineScope(Dispatchers.Default)
     private val events = Channel<SensorEvent>(100)
-    var actionTypeEnum : ActionTypeEnum =  ActionTypeEnum.UNKNOWN
+    var actionTypeEnum : UserActionEnum =  UserActionEnum.UNKNOWN
 
-    constructor(actionTypeEnum: ActionTypeEnum){
+    constructor(actionTypeEnum: UserActionEnum){
         this.actionTypeEnum = actionTypeEnum
     }
     override fun onSensorChanged(event: SensorEvent?) {
