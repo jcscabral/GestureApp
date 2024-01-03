@@ -9,11 +9,23 @@
     <string name="recipient">Destinatário: %1$s</string>
     <string name="key_pix_label">Chave PIX</string>
     <string name="app_controle">Controle da pesquisa</string>
-    <string name="app_acesso">Início</string>
+    <string name="app_signin">Registrar</string>
+    <string name="app_login">Acessar</string>
     <string name="app_mensagem_entrada">Seu Banco é aqui</string>
     <string name="app_autenticacao">Validação</string>
-    <string name="app_pix">Pix</string>
+    <string name="app_pix_home">Pix</string>
+    <string name="app_pix_money">Valor do PIX</string>
+    <string name="app_pix_receiver">Destinatário</string>
     <string name="app_fora">Ação fora da pesquisa</string>
+
+    <string name="pix_transfer">Transferir</string>
+    <string name="pix_schedule">Agendar</string>
+    <string name="pix_copy_paste">Pix Copia e Cola</string>
+    <string name="pix_qr_code">Ler QR Code</string>
+
+    <string name="pix_charge">Cobrar</string>
+    <string name="pix_deposit">Depositar</string>
+
     <string name="password">54837190</string>
     <string name="label_usuario">Usuário</string>
     <string name="label_idade">Idade</string>

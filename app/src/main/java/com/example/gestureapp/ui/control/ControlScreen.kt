@@ -23,8 +23,6 @@ fun ItemsLazyColumn(
     data : List<User>,
     modifier: Modifier =  Modifier
 ) {
-
-    // The LazyColumn will be our table. Notice the use of the weights below
     LazyColumn(
         Modifier
             //.fillMaxSize()

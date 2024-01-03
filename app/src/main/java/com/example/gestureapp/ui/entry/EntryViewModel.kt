@@ -1,6 +1,7 @@
 package com.example.gestureapp.ui.entry
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 import androidx.lifecycle.ViewModel
@@ -9,14 +10,19 @@ import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.PASSWORD
 import com.example.gestureapp.data.database.User
 import com.example.gestureapp.data.database.UsersRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 const val MIN_AGE = 18
 const val MAX_AGE = 120
@@ -30,10 +36,14 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     private var _userUiState = MutableStateFlow(UserUiState())
     var userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
 
-    val allUsers = usersRepository.getAllUsersStream().map{ AllUsers(it) }
-        .stateIn(
+    val allUsers = usersRepository
+        .getAllUsersStream()
+        .filterNotNull()
+        .map { AllUsers(it) }
+        .stateIn( // flow to stateflow
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            //started = SharingStarted.Eagerly,
             initialValue = AllUsers()
         )
 
@@ -49,6 +59,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
             )
         }
     }
+
     fun isMatched(attempt: String): Boolean{
         val isEqual  = attempt.trim() == PASSWORD
         setIsPasswordWrong(!isEqual)
@@ -87,7 +98,6 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 isFinished = true
             )
         }
-        newUiState()
     }
 
     fun setIsRegistered(){
@@ -98,13 +108,12 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         }
     }
 
-    fun updateId(){
-        viewModelScope.launch {
-            _userUiState.update { state ->
-                state.copy(
-                    id = allUsers.first().users.maxByOrNull { it.id }!!.id
-                )
-            }
+    fun setId(allUsers: AllUsers){
+        val id = if(allUsers.users.isNotEmpty()) allUsers.users.first().id else 1
+        _userUiState.update {state->
+            state.copy(
+                id = id
+            )
         }
     }
     private fun isValidAge(): Boolean{
@@ -114,16 +123,27 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         return ageInt in MIN_AGE..MAX_AGE
     }
 
-    fun saveUser() : Boolean {
-        var saved = false
-        if (isValidAge()){
-            viewModelScope.launch {
-                usersRepository.insertUser((_userUiState.value).toUser())
-                setIsRegistered()
-                saved =  true
-            }
+    fun addUSer(): Boolean{
+        if (isValidAge()) {
+            setIsRegistered()
+            saveUser()
+            return true
         }
-        return saved
+        return false
+    }
+
+
+//    private fun getLastUser(){
+//           viewModelScope.launch {
+//               val currenUsers  = allUsers.value.users
+//           }
+//    }
+
+    private fun saveUser() = runBlocking{
+        usersRepository.insertUser((_userUiState.value).toUser())
+        //val currentUsers  = allUsers.value.users
+        //setId(currentUsers.first().id)
+
     }
 }
 
@@ -149,5 +169,6 @@ fun UserUiState.toUser(): User = User(
     isFinished =  isFinished
 )
 data class AllUsers(
-    val users: List<User> =listOf<User>().sortedByDescending { it.id }
+    //val users: List<User> =listOf<User>().sortedByDescending { it.id }
+    val users: List<User> =listOf()
 )

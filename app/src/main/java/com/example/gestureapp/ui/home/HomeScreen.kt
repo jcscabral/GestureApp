@@ -5,31 +5,25 @@ import android.view.MotionEvent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -37,100 +31,27 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.ui.component.ProductItem
 
-
-@Composable
-fun ProductItem(
-    buttonSensorManager: ComponentSensorManager? =  null,
-    nameId: Int,
-    imageVector: ImageVector,
-    modifier: Modifier = Modifier
-){
-    Row(
-        modifier = Modifier
-            .padding(32.dp)
-            .fillMaxWidth()
-    ){
-
-        Column {
-
-            var numberOfTouches by remember { mutableIntStateOf(0) }
-            var touches = numberOfTouches.toString()
-
-            // events variables
-            var actionType by remember { mutableStateOf("") }
-            var pressureEvent by remember { mutableFloatStateOf(.0f) }
-            var pressure = pressureEvent.toString()
-            var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
-            var pointerSize = pointerSizeEvent.toString()
-            var tsTimeEvent by remember { mutableLongStateOf(0L) }
-            var tsTime = tsTimeEvent.toString()
-            var keysPressed by remember { mutableStateOf("") }
-
-            Button(
-                onClick = {
-                    // TODO call new activate
-                    numberOfTouches++
-                    Log.i("ONCLICK", numberOfTouches.toString())
-                },
-                modifier = Modifier
-                    .pointerInput(Unit) {
-                        if(buttonSensorManager!=null){
-                            awaitPointerEventScope {
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    for (change in event.changes) {
-                                        if (!buttonSensorManager.activated!!) {
-                                            buttonSensorManager.active()
-                                        }
-                                        actionType = change.type.toString()
-                                        pressureEvent = change.pressure
-                                        tsTimeEvent = change.uptimeMillis
-                                        if (!change.pressed) {
-                                            buttonSensorManager.active(false)
-                                        }
-                                        Log.i("ONCLICK_POINTER_SCOPE", "$actionType - $pressureEvent - $tsTimeEvent")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
-            ) {
-                Icon(
-                    imageVector,
-                    modifier = Modifier.size(64.dp),
-                    contentDescription = null
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(id = nameId),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Text(
-                text = touches,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductsList(
-    swipeSensorManager: ComponentSensorManager,
-    buttonSensorManager: ComponentSensorManager,
-    listOfServices: List<BankProductItem>,
+    swipeSensorManager: ComponentSensorManager?,
+    buttonSensorManager: ComponentSensorManager?,
+    onPixButtonClick: () -> Unit,
+    listOfServices: List<BankProductItem> = DataSource.bankServices,
     modifier: Modifier = Modifier
 ){
+
+    var actionCount by rememberSaveable { mutableStateOf(0) }
+
 
     var actionType by remember { mutableStateOf("") }
     var pressureEvent by remember { mutableFloatStateOf(.0f) }
@@ -171,12 +92,37 @@ fun ProductsList(
 
     val filter: PointerEventType? = null
 
+    Row(){
+        Text(text = "Action: $actionType | $_actionType")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(){
+        Text(text = "Pressure: $pressure | $_pressure")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(){
+        Text(text = "PosX: $posX | $_posX")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(){
+        Text(text = "PosY: $posY  | $_posY")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(){
+        Text(text = "Size: $pointerSize | $_pointerSize")
+    }
+    Spacer(modifier = Modifier.size(2.dp))
+    Row(){
+        Text(text = "Time: $tsTime | $_tsTime")
+    }
     Column(
         modifier = Modifier
+            //.pointerInteropFilter(onTouchEvent={true})
             .pointerInteropFilter() {
-
                 when (it.action) {
+                    // TODO make a functiom
                     MotionEvent.ACTION_DOWN -> {
+                        actionCount++
                         actionType = "DOWN"
                     }
                     MotionEvent.ACTION_UP -> {
@@ -195,35 +141,10 @@ fun ProductsList(
                 touchMajorEvent = it.touchMajor
                 tsTimeEvent = it.eventTime
                 tsDownTimeEvent = it.downTime
-
                 false
-
             }
 
     ) {
-        Row(){
-            Text(text = "Action: $actionType | $_actionType")
-        }
-        Spacer(modifier = Modifier.size(2.dp))
-        Row(){
-            Text(text = "Pressure: $pressure | $_pressure")
-        }
-        Spacer(modifier = Modifier.size(2.dp))
-        Row(){
-            Text(text = "PosX: $posX | $_posX")
-        }
-        Spacer(modifier = Modifier.size(2.dp))
-        Row(){
-            Text(text = "PosY: $posY  | $_posY")
-        }
-        Spacer(modifier = Modifier.size(2.dp))
-        Row(){
-            Text(text = "Size: $pointerSize | $_pointerSize")
-        }
-        Spacer(modifier = Modifier.size(2.dp))
-        Row(){
-            Text(text = "Time: $tsTime | $_tsTime")
-        }
 
         LazyRow(
             modifier = Modifier
@@ -234,21 +155,21 @@ fun ProductsList(
 
                         while (true) {
 
-                            _pointerSizeEvent = size.toSize().height * size.toSize().width // Wrong!
+                            //_pointerSizeEvent = size.toSize().height * size.toSize().width // Wrong!
                             val event = awaitPointerEvent()
                             // handle pointer event
                             //if (filter == null || event.type == filter) {
 
                             for (change in event.changes) {
 
-                                if (!swipeSensorManager.activated) {
-                                    swipeSensorManager.active()
+                                if (!swipeSensorManager?.activated!!) {
+                                    swipeSensorManager?.active()
                                 }
 
                                 val position = change.position
                                 _posXEvent = position.x
                                 _posYEvent = position.y
-                                //_pointerSizeEvent = change.previousPosition.x
+                                _pointerSizeEvent = position.getDistanceSquared()
                                 _actionType = change.type.toString()
                                 _pressureEvent = change.pressure
                                 _tsTimeEvent = change.uptimeMillis
@@ -260,11 +181,10 @@ fun ProductsList(
 
                                 Log.i(
                                     "POINTER_INPUT",
-                                    "${_pointerSizeEvent.toString()} > ${_posXEvent.toString()}"
+                                    "${_pointerSizeEvent} > ${_posXEvent}"
                                 )
                             }
                         }
-
                     }
                 }
 
@@ -276,6 +196,12 @@ fun ProductsList(
                         buttonSensorManager = if(it.nameId == R.string.service_pix) buttonSensorManager else null ,
                         nameId = it.nameId,
                         imageVector = it.imageIcon ,
+                        onButtonClick =
+                            if(it.nameId == R.string.service_pix){
+                                onPixButtonClick
+                            }
+                            else{ {} }
+                        ,
                         modifier = modifier
                     )
                 }
@@ -285,14 +211,16 @@ fun ProductsList(
 }
 
 @Composable
-fun HorizontalProducts(swipeSensorManager: ComponentSensorManager,
-                       buttonSensorManager: ComponentSensorManager,
+fun HorizontalProducts(swipeSensorManager: ComponentSensorManager?,
+                       buttonSensorManager: ComponentSensorManager?,
+                       onButtonClick: ()-> Unit,
                        modifier: Modifier = Modifier
 ) {
+    Text(text="Serviços") //TODO think of design
     ProductsList(
         swipeSensorManager,
         buttonSensorManager,
-        listOfServices = DataSource.bankServices
+        onButtonClick,
     )
 }
 
@@ -379,15 +307,33 @@ fun PIXTransfer(keyboardSensorManager: ComponentSensorManager,
 
 @Composable
 fun HomeScreen(
-    swipeSensorManager: ComponentSensorManager,
-    buttonSensorManager: ComponentSensorManager,
-    keyboardSensorManager: ComponentSensorManager
+    id: Int,
+    swipeSensorManager: ComponentSensorManager?,
+    buttonSensorManager: ComponentSensorManager?,
+    keyboardSensorManager: ComponentSensorManager?,
+    onButtonClick: ()-> Unit
 ) {
     Column {
-        Text(text="Serviços") //TODO think of design
-        HorizontalProducts(swipeSensorManager, buttonSensorManager)
+        Text("Olá você! n°${id}")
+        HorizontalProducts(
+            swipeSensorManager,
+            buttonSensorManager,
+            onButtonClick )
         Spacer(modifier = Modifier.height(8.dp))
-        PIXTransfer(keyboardSensorManager)
+        //PIXTransfer(keyboardSensorManager)
     }
+}
+
+@Preview
+@Composable
+fun Preview(
+    id: Int = 0
+){  HomeScreen(
+        id = id,
+        swipeSensorManager = null,
+        buttonSensorManager = null,
+        keyboardSensorManager = null,
+        onButtonClick = {}
+    )
 }
 

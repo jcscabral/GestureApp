@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui.custom
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,40 +31,45 @@ import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gestureapp.data.DataSource
 import kotlinx.coroutines.launch
 
 @Composable
 fun CustomKeyboard(
-    customKeyboardViewModel: CustomKeyboardViewModel
+    //customKeyboardViewModel: CustomKeyboardViewModel = CustomKeyboardViewModel()
+    textValue: String,
+    showSheet: Boolean,
+    onItemClick: (String )-> Unit,
+    onDismissRequest: ()-> Unit
 ) {
 
     Column {
-
         // Disable default keyboard, anyways
         CompositionLocalProvider(
             LocalTextInputService provides null
         ) {
             //  UI: just to user check his typing
             TextField(
-                value = customKeyboardViewModel.itemUiState.textValue,
+                //value = customKeyboardViewModel.textUiState.textValue,
+                value = textValue,
                 label = { Text(text = "Valor") },
                 readOnly = true,
                 onValueChange = {
                 },
                 modifier = Modifier
                     .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val event = awaitPointerEvent()
-                                customKeyboardViewModel.updateUiState(
-                                    customKeyboardViewModel.itemUiState.copy(
-                                        textValue = customKeyboardViewModel.itemUiState.textValue,
-                                        showSheet = true
-                                    )
-                                )
-                                Log.i("POINTER_INPUT", "Clicked")
-                            }
-                        }
+//                        awaitPointerEventScope {
+//                            while (true) {
+//                                val event = awaitPointerEvent()
+//                                customKeyboardViewModel.updateUiState(
+//                                    customKeyboardViewModel.itemUiState.copy(
+//                                        textValue = customKeyboardViewModel.itemUiState.textValue,
+//                                        showSheet = true
+//                                    )
+//                                )
+//                                Log.i("POINTER_INPUT", "Clicked")
+//                            }
+//                        }
                     }
                 ,
                 singleLine = true
@@ -74,7 +78,10 @@ fun CustomKeyboard(
         Spacer(modifier = Modifier.padding(8.dp))
         // Here we actually get the events
         ModalBottomLayout(
-            customKeyboardViewModel
+            //customKeyboardViewModel
+            showSheet = showSheet,
+            onItemClick = onItemClick ,
+            onDismissRequest = onDismissRequest
         )
     }
 }
@@ -83,11 +90,15 @@ fun CustomKeyboard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomLayout(
-    customKeyboardViewModel: CustomKeyboardViewModel
+    //customKeyboardViewModel: CustomKeyboardViewModel
+    digitList: List<String> =  DataSource.keyboardDigits,
+    showSheet: Boolean,
+    onItemClick: (String )-> Unit,
+    onDismissRequest: ()-> Unit
 ){
-    val digitList = listOf(
-        "1", "2", "3", "\u232b", "4", "5", "6", "Done", "7", "8", "9", " ", " ", "0", " ", " "
-    )
+//    val digitList = listOf(
+//        "1", "2", "3", "\u232b", "4", "5", "6", "OK", "7", "8", "9", " ", " ", "0", " ", " "
+//    )
     // Keep SheetValue.Expanded
     val sheetState = rememberModalBottomSheetState(
         confirmValueChange = {
@@ -98,12 +109,14 @@ fun ModalBottomLayout(
 
     Column(
     ){
-        if(customKeyboardViewModel.itemUiState.showSheet) {
+        //if(customKeyboardViewModel.textUiState.showSheet) {
+        if(showSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    coroutineScope.launch{
-                        customKeyboardViewModel.onDismissRequest()
-                    }
+                    //coroutineScope.launch{
+                        onDismissRequest
+                    //customKeyboardViewModel.onDismissRequest()
+                    //}
                 },
                 scrimColor = Color.Transparent,
                 tonalElevation = 5.dp,
@@ -123,9 +136,10 @@ fun ModalBottomLayout(
                         BottomActionSheetView(
                             digitList = digitList,
                             onItemClick = {
-                                coroutineScope.launch {
-                                    customKeyboardViewModel.onItemClick(it)
-                                }
+                                //coroutineScope.launch {
+                                    //customKeyboardViewModel.onItemClick(it)
+                                    onItemClick(it)
+                                //}
                             }
                         )
                         Spacer(modifier = Modifier.padding(vertical = 24.dp))
@@ -183,7 +197,7 @@ fun GridListItemView(
         ,
         colors = ButtonDefaults.textButtonColors(
             containerColor = Color.DarkGray,
-            contentColor = if (data != "Done") Color.White else Color.Cyan,
+            contentColor = if (data != "OK") Color.White else Color.Cyan,
             disabledContainerColor = Color.Gray,
             disabledContentColor =  Color.White
         ),

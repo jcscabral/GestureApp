@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui.entry
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,17 +32,18 @@ import com.example.gestureapp.data.DataSource
 
 
 @Composable
-fun SignIn(
+fun LogIn(
+    id: Int,
     userName: String,
-    age: String,
-    gender: String,
-    genderList: List<String> = DataSource.gender,
-    onAgeValueChange: (String)-> Unit,
-    onGenderClick: (String)-> Unit,
-    onButtonClick:()->Unit,
-    modifier: Modifier =  Modifier
+    isPasswordWrong: Boolean,
+    useOption: String,
+    onTrainClicked:(String)->Unit,
+    onLoginClick: (String) -> Unit,
+    useOptionList: List<String> = DataSource.useOption,
 )
 {
+    var passwordText by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -52,9 +52,19 @@ fun SignIn(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Registrar",
+            text = "Acesso cliente n°${id}",
             style = MaterialTheme.typography.titleLarge,
         )
+        if (!isPasswordWrong){
+            Text(
+                text = ""
+            )
+        }
+        else{
+            Text(
+                text =  "Senha errada, favor tente novamente"
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,7 +75,7 @@ fun SignIn(
             OutlinedTextField(
                 value = userName,
                 onValueChange = { },
-                label = {Text(text = stringResource(R.string.label_usuario))},
+                label = { Text(text = "Usuário") },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -76,90 +86,64 @@ fun SignIn(
                 singleLine = true
             )
             OutlinedTextField(
-                value = age,
-                onValueChange = onAgeValueChange,
-                label = {Text(text = stringResource(R.string.label_idade))},
+                value = passwordText,
+                onValueChange = {
+                    passwordText =  it
+                },
+                label = {
+                    if(isPasswordWrong){
+                        Text(text = "Tente novamente")
+                        //TODO show visually w modifier
+                    }
+                    else{
+                        Text(text = "Senha")
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
-                modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
-                ),
-                singleLine = true
 
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
-            for (sex in genderList){
+            for (use in useOptionList){
                 Row(
                     modifier = Modifier.selectable(
-                        selected = gender == sex,
+                        selected = useOption == use ,
                         onClick = {
-                            onGenderClick(sex)
+                            onTrainClicked(use)
                         }
                     ),
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     RadioButton(
-                        selected = gender == sex,
+                        selected = useOption == use,
                         onClick = {
-                            onGenderClick(sex)
+                            onTrainClicked(use)
                         }
                     )
-                    Text(sex)
+                    Text(use)
                 }
             }
-
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onButtonClick
+                onClick = {
+                    onLoginClick(passwordText)
+                }
             ) {
                 Text(
-                    text = "Salvar",
+                    text = stringResource(R.string.button_entrar),
                     fontSize = 16.sp
                 )
             }
+
+
         }
     }
-
-}
-
-
-@Composable
-fun EntryScreen(
-    //id: Int,
-    userName: String,
-    age: String,
-    gender: String,
-//    useOption: String,
-//    isPasswordWrong: Boolean,
-    isRegistered: Boolean,
-    onAgeValueChange: (String) -> Unit,
-    onGenderClick: (String) -> Unit,
-    onUserRegistered: () -> Unit,
-//    onTrainClicked: (String)-> Unit,
-//    onLoginClicked: (String) -> Unit
-) {
-    //if (!isRegistered){
-        SignIn(
-            userName = userName,
-            age = age,
-            gender = gender ,
-            onAgeValueChange = onAgeValueChange,
-            onGenderClick = onGenderClick,
-            onButtonClick = onUserRegistered
-        )
-    //}
-//    else{
-//        LogIn(
-//            id = id,
-//            userName = userName,
-//            isPasswordWrong = isPasswordWrong,
-//            useOption = useOption,
-//            onTrainClicked = onTrainClicked,
-//            onLoginClick =  onLoginClicked
-//        )
-//    }
 }

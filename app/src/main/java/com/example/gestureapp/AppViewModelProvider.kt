@@ -11,7 +11,9 @@ object AppViewModelProvider {
         // Initializer for ItemEditViewModel
 
         initializer {
-            EntryViewModel(gestureApplication().container.usersRepository)
+
+            EntryViewModel(gestureApplication()
+                .container.usersRepository)
         }
 
         // Initializer for ItemDetailsViewModel

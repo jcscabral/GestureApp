@@ -17,6 +17,7 @@ interface UsersRepository {
      */
     suspend fun insertUser(user: User)
 
+
     /**
      * Delete User from the data source
      */
