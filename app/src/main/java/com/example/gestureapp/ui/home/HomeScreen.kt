@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -37,6 +39,7 @@ import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.component.ProductItem
 
 
@@ -46,9 +49,11 @@ fun ProductsList(
     swipeSensorManager: ComponentSensorManager?,
     buttonSensorManager: ComponentSensorManager?,
     onPixButtonClick: () -> Unit,
-    listOfServices: List<BankProductItem> = DataSource.bankServices,
     modifier: Modifier = Modifier
 ){
+
+    val listOfServices: List<BankProductItem> = DataSource.bankServices
+    //val state = rememberLazyListState()
 
     var actionCount by rememberSaveable { mutableStateOf(0) }
 
@@ -187,8 +192,6 @@ fun ProductsList(
                         }
                     }
                 }
-
-
         ){
             items(listOfServices){
                 Column(horizontalAlignment = Alignment.CenterHorizontally){
@@ -224,97 +227,100 @@ fun HorizontalProducts(swipeSensorManager: ComponentSensorManager?,
     )
 }
 
-@Composable
-fun PIXTransfer(keyboardSensorManager: ComponentSensorManager,
-                modifier: Modifier =  Modifier
-){
-    // TODO implement keyboardSensorManager
-    var pixKey by remember { mutableStateOf("") }
-    val filter: PointerEventType? = null
-
-    // events variables
-    var actionType by remember { mutableStateOf("") }
-    var pressureEvent by remember { mutableFloatStateOf(.0f) }
-    var pressure = pressureEvent.toString()
-    var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
-    var pointerSize = pointerSizeEvent.toString()
-    var tsTimeEvent by remember { mutableLongStateOf(0L) }
-    var tsTime = tsTimeEvent.toString()
-    var keysPressed by remember { mutableStateOf("") }
-
-    Column(
-
-    ){
-        Spacer(modifier = Modifier.size(2.dp))
-        Text(text = "ActionType: $actionType")
-        Spacer(modifier = Modifier.size(2.dp))
-        Text(text = "Pressure: $pressure")
-        Spacer(modifier = Modifier.size(2.dp))
-        Text(text = "Keys pressed: $keysPressed")
-        Spacer(modifier = Modifier.size(2.dp))
-        Text(text = stringResource(R.string.insert_pix_key),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 40.dp)
-                .align(alignment = Alignment.Start)
-        )
-        Text(text = "TsTime: $tsTime")
-        TextField(
-            value = pixKey,
-            label = { Text(stringResource(R.string.key_pix_label)) },
-            onValueChange = {pixKey = it} ,
-            modifier = Modifier
-                .pointerInput(filter) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            for (change in event.changes) {
-                                if (!keyboardSensorManager.activated) {
-                                    keyboardSensorManager.active()
-                                }
-
-                                actionType = change.type.toString()
-                                pressureEvent = change.pressure
-                                tsTimeEvent = change.uptimeMillis
-
-                                if (!change.pressed) {
-                                    keyboardSensorManager.active(false)
-                                }
-                                Log.i("KEYBOARD", "$actionType - $pressureEvent - $tsTimeEvent")
-                            }
-
-                        }
-                    }
-                }
-                .onKeyEvent {
-                    val keyUtf16 = it.utf16CodePoint
-                    keysPressed += keyUtf16
-                        .toChar()
-                        .toString()
-                    Log.i("KEYBOARD", "Key pressed:${keyUtf16.toString()}")
-                    false
-                }
-            ,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // can that affect the results?
-        )
-        Text(
-            text = stringResource(R.string.recipient, pixKey) ,
-        )
-
-    }
-
-}
+//@Composable
+//fun PIXTransfer(keyboardSensorManager: ComponentSensorManager,
+//                modifier: Modifier =  Modifier
+//){
+//    // TODO implement keyboardSensorManager
+//    var pixKey by remember { mutableStateOf("") }
+//    val filter: PointerEventType? = null
+//
+//    // events variables
+//    var actionType by remember { mutableStateOf("") }
+//    var pressureEvent by remember { mutableFloatStateOf(.0f) }
+//    var pressure = pressureEvent.toString()
+//    var pointerSizeEvent by remember { mutableFloatStateOf(.0f) }
+//    var pointerSize = pointerSizeEvent.toString()
+//    var tsTimeEvent by remember { mutableLongStateOf(0L) }
+//    var tsTime = tsTimeEvent.toString()
+//    var keysPressed by remember { mutableStateOf("") }
+//
+//    Column(
+//
+//    ){
+//        Spacer(modifier = Modifier.size(2.dp))
+//        Text(text = "ActionType: $actionType")
+//        Spacer(modifier = Modifier.size(2.dp))
+//        Text(text = "Pressure: $pressure")
+//        Spacer(modifier = Modifier.size(2.dp))
+//        Text(text = "Keys pressed: $keysPressed")
+//        Spacer(modifier = Modifier.size(2.dp))
+//        Text(text = stringResource(R.string.insert_pix_key),
+//            modifier = Modifier
+//                .padding(bottom = 16.dp, top = 40.dp)
+//                .align(alignment = Alignment.Start)
+//        )
+//        Text(text = "TsTime: $tsTime")
+//        TextField(
+//            value = pixKey,
+//            label = { Text(stringResource(R.string.key_pix_label)) },
+//            onValueChange = {pixKey = it} ,
+//            modifier = Modifier
+//                .pointerInput(filter) {
+//                    awaitPointerEventScope {
+//                        while (true) {
+//                            val event = awaitPointerEvent()
+//                            for (change in event.changes) {
+//                                if (!keyboardSensorManager.activated) {
+//                                    keyboardSensorManager.active()
+//                                }
+//
+//                                actionType = change.type.toString()
+//                                pressureEvent = change.pressure
+//                                tsTimeEvent = change.uptimeMillis
+//
+//                                if (!change.pressed) {
+//                                    keyboardSensorManager.active(false)
+//                                }
+//                                Log.i("KEYBOARD", "$actionType - $pressureEvent - $tsTimeEvent")
+//                            }
+//
+//                        }
+//                    }
+//                }
+//                .onKeyEvent {
+//                    val keyUtf16 = it.utf16CodePoint
+//                    keysPressed += keyUtf16
+//                        .toChar()
+//                        .toString()
+//                    Log.i("KEYBOARD", "Key pressed:${keyUtf16.toString()}")
+//                    false
+//                }
+//            ,
+//            singleLine = true,
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // can that affect the results?
+//        )
+//        Text(
+//            text = stringResource(R.string.recipient, pixKey) ,
+//        )
+//
+//    }
+//
+//}
 
 @Composable
 fun HomeScreen(
     id: Int,
+    balance: Double ,
     swipeSensorManager: ComponentSensorManager?,
     buttonSensorManager: ComponentSensorManager?,
     keyboardSensorManager: ComponentSensorManager?,
     onButtonClick: ()-> Unit
 ) {
     Column {
-        Text("Olá você! n°${id}")
+        Text("Olá você! n°$id")
+        Text("Seu saldo é: ${moneyFormatter(balance)}") //TODO
+
         HorizontalProducts(
             swipeSensorManager,
             buttonSensorManager,
@@ -327,9 +333,11 @@ fun HomeScreen(
 @Preview
 @Composable
 fun Preview(
-    id: Int = 0
+    id: Int = 0 ,
+    balance: Double = 0.00 ,
 ){  HomeScreen(
         id = id,
+        balance = balance ,
         swipeSensorManager = null,
         buttonSensorManager = null,
         keyboardSensorManager = null,

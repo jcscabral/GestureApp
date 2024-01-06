@@ -1,99 +1,136 @@
 package com.example.gestureapp.ui.custom
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.data.CPF_SIZE
+import com.example.gestureapp.data.FACTOR_TEN
+import com.example.gestureapp.data.KEY_BACKSPACE
+import com.example.gestureapp.data.KEY_OK
+import com.example.gestureapp.data.MAX_PASSWORD_SIZE
+import com.example.gestureapp.moneyFormatter
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import java.lang.StringBuilder
 import java.math.BigInteger
-import java.text.NumberFormat
-import java.util.Locale
+import kotlin.math.max
 import kotlin.math.round
 
 enum class KeyboardTypeEnum{
     MONEY, CPF, PASSWORD,
 }
-class CustomKeyboardViewModel(): ViewModel() {
+class CustomKeyboardViewModel(
+    savedStateHandle: SavedStateHandle
+): ViewModel() {
 
-    private var moneyMask = MoneyMask()
-    var textUiState by mutableStateOf(TextUiState())
+    private val moneyMask = MoneyText()
+    private val cpfMask = CpfText()
+    private val passwordMask = PasswordText()
 
-    var currentType = KeyboardTypeEnum.MONEY
+    private val _uiState = MutableStateFlow(TextUiState())
+    val uiState: StateFlow<TextUiState> = _uiState.asStateFlow()
 
+    private fun setKeyboardType(keyboardTypeEnum: KeyboardTypeEnum){
+        _uiState.update { state ->
+            state.copy(
+                keyboardType = keyboardTypeEnum
+            )
+        }
+        setTextValue("")
+    }
     fun setMoneyType(){
-        currentType = KeyboardTypeEnum.MONEY
+        Log.i("SET_MONEY_TYPE", "Fired")
+        setKeyboardType(KeyboardTypeEnum.MONEY)
         moneyMask.reset()
-        //moneyMask = MoneyMask()
     }
     fun setCpfType(){
-        currentType = KeyboardTypeEnum.CPF
+        Log.i("SET_CPF_TYPE", "Fired")
+        setKeyboardType(KeyboardTypeEnum.CPF)
+        Log.i("CustomKeyboardViewModel.setCpfType", "currentType: ${_uiState.value.keyboardType}")
+        cpfMask.reset()
     }
 
     fun setPasswordType(){
-        currentType = KeyboardTypeEnum.PASSWORD
+        Log.i("SET_PASSWORD_TYPE", "Fired")
+        setKeyboardType(KeyboardTypeEnum.PASSWORD)
+        passwordMask.reset()
     }
 
-//    fun updateUiState(itemUiState: TextUiState){
-//        this.textUiState =  TextUiState(
-//            textValue = itemUiState.textValue,
-//            showSheet = itemUiState.showSheet
-//        )
-//    }
-
+    fun getTextAsDouble(): Double{
+        return _uiState.value.textValue
+            .replace("R$","")
+            .replace(".","")
+            .replace(",",".")
+            .trim()
+            .toDouble()
+    }
     fun onDismissRequest(){
-        textUiState =  textUiState.copy(
-            showSheet = false
-        )
+        _uiState.update { state ->
+            state.copy(
+                showSheet = false
+            )
+        }
+        Log.i("CustomKeyboardViewModel.onDismissRequest", "currentType: ${_uiState.value.keyboardType}")
 
-//        itemUiState =  ItemUiState(
-//            textValue = itemUiState.textValue,
-//            showSheet = false
-//        )
+    }
+
+    private fun setTextValue(text: String){
+        _uiState.update { state ->
+            state.copy(
+                textValue = text
+            )
+        }
     }
 
     fun onItemClick(text: String): Boolean{
-        if (text == DataSource.keyboardOK) return false
-        val currentText = if (currentType == KeyboardTypeEnum.MONEY) moneyMask.add(text) else text
+        if (text == KEY_OK) return false
 
-        textUiState =  textUiState.copy(
-            textValue = currentText
-        )
+        Log.i("CustomKeyboardViewModel.onItemClick", "currentType: ${_uiState.value.keyboardType}")
+        Log.i("CustomKeyboardViewModel.onItemClick", "text: $text")
+
+        val formattedText = when(_uiState.value.keyboardType){
+            KeyboardTypeEnum.MONEY -> moneyMask.add(text)
+            KeyboardTypeEnum.CPF -> cpfMask.add(text)
+            else -> passwordMask.add(text)
+        }
+        Log.i("KEYBOARD_VIEWMODEL", "text: $formattedText")
+
+        setTextValue(formattedText)
+
         return true
-//        itemUiState =  ItemUiState(
-//            textValue = moneyMask.add(text),
-//            showSheet = itemUiState.showSheet
-//        )
     }
-
 }
 
 data class TextUiState(
     val textValue: String =  "",
+    val keyboardType: KeyboardTypeEnum = KeyboardTypeEnum.MONEY,
     val showSheet: Boolean = true
 )
 
-class MoneyMask(){
+class MoneyText(){
 
     private var initialMoney =  0.00
-    fun add(fieldText: String): String {
+    fun add(text: String): String {
 
-        val factorTen = BigInteger("10")
         var initialMoneyInt: BigInteger = BigInteger.valueOf(round(initialMoney * 100).toLong())
 
-        if(fieldText =="\u232b"){
-            initialMoneyInt = (initialMoneyInt / factorTen)
+        if(text == KEY_BACKSPACE){ //TODO
+            initialMoneyInt = (initialMoneyInt / FACTOR_TEN)
         }
         else{
-            val digitInt = BigInteger(fieldText)//.toInt()
-            initialMoneyInt = (initialMoneyInt * factorTen)
+            val digitInt = BigInteger(text)
+            initialMoneyInt = (initialMoneyInt * FACTOR_TEN)
             initialMoneyInt += digitInt
         }
 
         initialMoney = initialMoneyInt.toDouble()/100
 
-        val locale = Locale("pt", "BR")
-        val formatter =  NumberFormat.getCurrencyInstance(locale)
-        return formatter.format(initialMoney)
+        return moneyFormatter(initialMoney)
+//        val locale = Locale("pt", "BR")
+//        val formatter =  NumberFormat.getCurrencyInstance(locale)
+//        return formatter.format(initialMoney)
 
     }
 
@@ -102,10 +139,64 @@ class MoneyMask(){
     }
 }
 
-class NumberMask(fieldText: String){
+fun String.addCharAtIndex(char: Char, index: Int) =
+    StringBuilder(this).apply { insert(index, char) }.toString()
+
+class CpfText(){
+
     private var initialValue = ""
 
-    fun add(){
+    fun add(fieldText: String): String {
+        if(fieldText =="\u232b"){
+            initialValue = initialValue.substring(
+                0, max(initialValue.length -1, 0)
+            )
+        }
+        else if(initialValue.length < CPF_SIZE ){
+            initialValue+=fieldText
+        }
+        return format(initialValue)
+    }
+
+    private fun format(text: String): String{
+        var formattedText = text
+
+        if(text.length > 3){
+            formattedText = text.addCharAtIndex('.', 3)
+        }
+        if(text.length > 6){
+            formattedText = formattedText.addCharAtIndex('.', 7)
+        }
+        if(text.length > 9){
+            formattedText = formattedText.addCharAtIndex('-', 11)
+        }
+        return formattedText
+    }
+
+    fun reset(){
+        initialValue = ""
+    }
+
+}
+
+class PasswordText(){
+
+    private var initialValue = ""
+    private val onePositionBack = 1
+    fun add(text: String): String {
+        if(text == "\u232b"){
+            initialValue = initialValue.substring(
+                0, max(initialValue.length - onePositionBack, 0)
+            )
+        }
+        else if(initialValue.length < MAX_PASSWORD_SIZE ){
+            initialValue+=text
+        }
+        return initialValue
+    }
+
+    fun reset(){
+        initialValue = ""
     }
 
 }

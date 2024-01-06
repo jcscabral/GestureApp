@@ -8,8 +8,17 @@ import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.ShoppingCart
 import com.example.gestureapp.R
 import com.example.gestureapp.model.BankProductItem
+import java.math.BigInteger
 
+const val CPF_SIZE = 11
 const val PASSWORD = "54837190"
+const val MAX_PASSWORD_SIZE  = PASSWORD.length
+
+const val KEY_OK = "OK"
+const val KEY_BACKSPACE = "\u232b"
+
+const val TEN = "10"
+val FACTOR_TEN = BigInteger(TEN)
 
 abstract class DataSource {
     companion object {
@@ -46,10 +55,8 @@ abstract class DataSource {
             "Avaliação"
         )
 
-        val keyboardOK = "OK"
-
         val keyboardDigits = listOf(
-            "1", "2", "3", "\u232b", "4", "5", "6", keyboardOK, "7", "8", "9", " ", " ", "0", " ", " "
+            "1", "2", "3", KEY_BACKSPACE, "4", "5", "6", KEY_OK, "7", "8", "9", " ", " ", "0", " ", " "
         )
 
 

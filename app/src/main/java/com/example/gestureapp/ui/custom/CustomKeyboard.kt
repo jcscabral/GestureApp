@@ -14,7 +14,10 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,12 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestureapp.data.DataSource
-import kotlinx.coroutines.launch
 
 @Composable
 fun CustomKeyboard(
     //customKeyboardViewModel: CustomKeyboardViewModel = CustomKeyboardViewModel()
     textValue: String,
+    label: String,
     showSheet: Boolean,
     onItemClick: (String )-> Unit,
     onDismissRequest: ()-> Unit
@@ -49,14 +52,20 @@ fun CustomKeyboard(
             LocalTextInputService provides null
         ) {
             //  UI: just to user check his typing
-            TextField(
+            OutlinedTextField(
                 //value = customKeyboardViewModel.textUiState.textValue,
                 value = textValue,
-                label = { Text(text = "Valor") },
+                label = { Text(text = label) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ),
                 readOnly = true,
                 onValueChange = {
                 },
                 modifier = Modifier
+                    .fillMaxWidth()
                     .pointerInput(Unit) {
 //                        awaitPointerEventScope {
 //                            while (true) {
@@ -90,22 +99,18 @@ fun CustomKeyboard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomLayout(
-    //customKeyboardViewModel: CustomKeyboardViewModel
     digitList: List<String> =  DataSource.keyboardDigits,
     showSheet: Boolean,
     onItemClick: (String )-> Unit,
     onDismissRequest: ()-> Unit
 ){
-//    val digitList = listOf(
-//        "1", "2", "3", "\u232b", "4", "5", "6", "OK", "7", "8", "9", " ", " ", "0", " ", " "
-//    )
     // Keep SheetValue.Expanded
     val sheetState = rememberModalBottomSheetState(
         confirmValueChange = {
             false
         }
     )
-    val coroutineScope = rememberCoroutineScope()
+    //val coroutineScope = rememberCoroutineScope()
 
     Column(
     ){
@@ -201,7 +206,10 @@ fun GridListItemView(
             disabledContainerColor = Color.Gray,
             disabledContentColor =  Color.White
         ),
-        onClick = {onItemClick(data)}
+        onClick = {
+            if(data != ""){
+                onItemClick(data)}
+            }
     ){
         Text(
             text = data,

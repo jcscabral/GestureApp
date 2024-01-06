@@ -17,6 +17,7 @@ import com.example.gestureapp.ui.custom.CustomKeyboard
 @Composable
 fun AuthScreen(
     textValue: String,
+    label: String =  "Senha",
     showSheet: Boolean,
     onItemClick: (String )-> Unit,
     onDismissRequest: ()-> Unit
@@ -30,7 +31,7 @@ fun AuthScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Insira o valor da transferência",
+            text = "Insira a senha",
             style = MaterialTheme.typography.titleLarge,
         )
         Column(
@@ -42,6 +43,7 @@ fun AuthScreen(
         ) {
             CustomKeyboard(
                 textValue = textValue,
+                label = label,
                 showSheet = showSheet,
                 onItemClick =  onItemClick,
                 onDismissRequest =  onDismissRequest

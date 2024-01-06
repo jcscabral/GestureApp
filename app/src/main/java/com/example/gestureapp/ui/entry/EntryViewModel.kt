@@ -116,6 +116,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
             )
         }
     }
+
     private fun isValidAge(): Boolean{
         val age  =  _userUiState.value.age
         if (age.isNullOrEmpty()) return false
@@ -123,8 +124,13 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         return ageInt in MIN_AGE..MAX_AGE
     }
 
+    fun isGenreSet(): Boolean{
+        val genre = _userUiState.value.gender
+        return !genre.isNullOrEmpty()
+    }
+
     fun addUSer(): Boolean{
-        if (isValidAge()) {
+        if (isValidAge() && isGenreSet()) {
             setIsRegistered()
             saveUser()
             return true
@@ -152,9 +158,10 @@ data class UserUiState(
     val userName: String = "voce",
     val age: String = "",
     val gender: String = "",
+    val useOption: String = DataSource.useOption.first(),
     val isPasswordWrong: Boolean = false,
     val isRegistered: Boolean = false,
-    val useOption: String = DataSource.useOption.first(),
+    val isLogged: Boolean = false,
     val isStarted: Boolean = false,
     val isFinished: Boolean = false
 )
@@ -165,6 +172,7 @@ fun UserUiState.toUser(): User = User(
     gender = gender.substring(0,1) ,
     isRegistered =  isRegistered,
     isTrain =  useOption == DataSource.useOption.first(),
+    isLogged = isLogged,
     isStarted = isStarted,
     isFinished =  isFinished
 )

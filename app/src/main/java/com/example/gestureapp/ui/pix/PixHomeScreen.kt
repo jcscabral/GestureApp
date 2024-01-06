@@ -1,9 +1,7 @@
 package com.example.gestureapp.ui.pix
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,28 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.model.BankProductItem
+import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.component.ProductItem
 import com.example.gestureapp.ui.custom.CustomKeyboard
 
@@ -110,8 +97,10 @@ fun PixHomeScreen(
 
 @Composable
 fun PixMoneyScreen(
+    balance: Double,
     textValue: String,
     showSheet: Boolean,
+    label: String = "Valor",
     onItemClick: (String )-> Unit,
     onDismissRequest: ()-> Unit
 ){
@@ -122,6 +111,9 @@ fun PixMoneyScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "Saldo atual: ${moneyFormatter(balance)}"
+        )
         Text(
             text = "Insira o valor da transferência",
             style = MaterialTheme.typography.titleLarge,
@@ -135,6 +127,7 @@ fun PixMoneyScreen(
         ) {
             CustomKeyboard(
                 textValue = textValue,
+                label = label,
                 showSheet = showSheet,
                 onItemClick = onItemClick,
                 onDismissRequest =  onDismissRequest
@@ -146,6 +139,7 @@ fun PixMoneyScreen(
 @Composable
 fun PixReceiverScreen(
     textValue: String,
+    label: String = "CPF",
     showSheet: Boolean,
     onItemClick: (String )-> Unit,
     onDismissRequest: ()-> Unit
@@ -158,7 +152,7 @@ fun PixReceiverScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Para quem você vai tarnsferir?",
+            text = "Para quem você vai transferir?",
             style = MaterialTheme.typography.titleLarge,
         )
         Column(
@@ -170,6 +164,7 @@ fun PixReceiverScreen(
         ) {
             CustomKeyboard(
                 textValue = textValue,
+                label = label,
                 showSheet = showSheet,
                 onItemClick = onItemClick,
                 onDismissRequest =  onDismissRequest

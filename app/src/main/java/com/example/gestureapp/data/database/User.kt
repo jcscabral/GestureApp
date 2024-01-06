@@ -18,6 +18,7 @@ data class User(
     val gender: String,
     val isStarted: Boolean = false,
     val isRegistered: Boolean = false,
+    val isLogged: Boolean = false,
     val isTrain: Boolean = true,
     val isFinished: Boolean = false,
     val date: String = DATE

@@ -26,12 +26,11 @@ import com.example.gestureapp.R
 import com.example.gestureapp.model.ComponentSensorManager
 import com.example.gestureapp.ui.auth.AuthScreen
 import com.example.gestureapp.ui.control.ControlScreen
-import com.example.gestureapp.ui.custom.CustomKeyboard
 import com.example.gestureapp.ui.custom.CustomKeyboardViewModel
 import com.example.gestureapp.ui.entry.EntryScreen
 import com.example.gestureapp.ui.entry.EntryViewModel
-import com.example.gestureapp.ui.entry.LogIn
 import com.example.gestureapp.ui.home.HomeScreen
+import com.example.gestureapp.ui.home.HomeViewModel
 import com.example.gestureapp.ui.pix.PixHomeScreen
 import com.example.gestureapp.ui.pix.PixMoneyScreen
 import com.example.gestureapp.ui.pix.PixReceiverScreen
@@ -54,7 +53,8 @@ fun AppScreen(
     buttonSensorManager: ComponentSensorManager,
     keyboardSensorManager: ComponentSensorManager,
     entryViewModel: EntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    keyboardViewModel: CustomKeyboardViewModel = CustomKeyboardViewModel(),
+    homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    keyboardViewModel: CustomKeyboardViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
@@ -75,7 +75,8 @@ fun AppScreen(
         val userUiState by entryViewModel.userUiState.collectAsState()
         val allUsers by entryViewModel.allUsers.collectAsState()
 
-        val textUiState = keyboardViewModel.textUiState
+        val keyboardUiState = keyboardViewModel.uiState.collectAsState()
+        val balanceUiSate = homeViewModel.balanceUiState.collectAsState()
 
         NavHost(
             navController = navController,
@@ -97,55 +98,61 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.SignIn.name) {
                 EntryScreen(
-                    //isStarted =  userUiState.isStarted,
-                    //id = userUiState.id,
                     userName = userUiState.userName,
                     age = userUiState.age,
                     gender = userUiState.gender,
-                    //isPasswordWrong = userUiState.isPasswordWrong,
-                    isRegistered = userUiState.isRegistered,
-                    //useOption = userUiState.useOption,
+                    //isRegistered = userUiState.isRegistered,
                     onAgeValueChange = {
                         entryViewModel.setAge(it)
                     },
                     onGenderClick = {
                         entryViewModel.setGender(it)
                     },
-                    onUserRegistered = {
+                    onButtonClicked = {
                         if(entryViewModel.addUSer()){
+                            keyboardViewModel.setPasswordType()
                             navController.navigate(AppScreenEnum.LogIn.name)
                         }
-                    },
-//                    onTrainClicked = {
-//                        entryViewModel.setUseOption(it)
-//                    },
-//                    onLoginClicked = {
-//                        if (entryViewModel.isMatched(it)){
-//                            navController.navigate(AppScreenEnum.Home.name)
-//                        }
-                    //}
+                        else{
+
+
+                        }
+                    }
                 )
             }
             composable(route = AppScreenEnum.LogIn.name) {
                 entryViewModel.setId(allUsers)
-                LogIn(
+                AuthScreen(
                     id = userUiState.id,
                     userName = userUiState.userName,
-                    isPasswordWrong = userUiState.isPasswordWrong,
                     useOption = userUiState.useOption,
+                    isPasswordWrong = userUiState.isPasswordWrong,
+                    isLogged = userUiState.isLogged,
                     onTrainClicked = {
                         entryViewModel.setUseOption(it)
                     },
                     onLoginClick = {
-                        if (entryViewModel.isMatched(it)){
-                            navController.navigate(AppScreenEnum.Home.name)
+                        if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK"
+                            if (entryViewModel.isMatched(keyboardUiState.value.textValue)) {
+                                entryViewModel.setIsPasswordWrong(false)
+                                navController.navigate(AppScreenEnum.Home.name)
+                            }
+                            else{
+                                entryViewModel.setIsPasswordWrong(true)
+                            }
                         }
+                    },
+                    keyboardText = keyboardUiState.value.textValue,
+                    showSheet = keyboardUiState.value.showSheet,
+                    onDismissRequest = {
+                        keyboardViewModel.onDismissRequest()
                     }
                 )
             }
             composable(route = AppScreenEnum.Home.name) {
                 HomeScreen(
                     id = userUiState.id,
+                    balance = balanceUiSate.value,
                     swipeSensorManager = swipeSensorManager,
                     buttonSensorManager = buttonSensorManager,
                     keyboardSensorManager = keyboardSensorManager,
@@ -157,17 +164,20 @@ fun AppScreen(
             composable(route = AppScreenEnum.PixHome.name) {
                 PixHomeScreen(
                     onSendPixButtonClick = {
+                        keyboardViewModel.setMoneyType()
                         navController.navigate(AppScreenEnum.PixMoney.name)
                     }
                 )
             }
             composable(route = AppScreenEnum.PixMoney.name) {
-                keyboardViewModel.setMoneyType()
                 PixMoneyScreen(
-                    textValue = textUiState.textValue,
-                    showSheet = textUiState.showSheet,
+                    balance = balanceUiSate.value,
+                    textValue = keyboardUiState.value.textValue,
+                    showSheet = keyboardUiState.value.showSheet,
                     onItemClick = {
                         if (!keyboardViewModel.onItemClick(it)){
+                            homeViewModel.minus(keyboardViewModel.getTextAsDouble())
+                            keyboardViewModel.setCpfType()
                             navController.navigate(AppScreenEnum.PixReceiver.name)
                         }
                     },
@@ -177,13 +187,13 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
-                keyboardViewModel.setCpfType()
                 PixReceiverScreen(
-                    textValue = textUiState.textValue,
-                    showSheet = textUiState.showSheet,
+                    textValue = keyboardUiState.value.textValue,
+                    showSheet = keyboardUiState.value.showSheet,
                     onItemClick = {
                         if (!keyboardViewModel.onItemClick(it)){
-                            navController.navigate(AppScreenEnum.Auth.name)
+                            keyboardViewModel.setPasswordType()
+                            navController.navigate(AppScreenEnum.LogIn.name)
                         }
                     },
                     onDismissRequest = {
@@ -191,21 +201,21 @@ fun AppScreen(
                     }
                 )
             }
-            composable(route = AppScreenEnum.Auth.name) {
-                keyboardViewModel.setPasswordType()
-                AuthScreen(
-                    textValue = textUiState.textValue,
-                    showSheet = textUiState.showSheet,
-                    onItemClick = {
-                        if (!keyboardViewModel.onItemClick(it)){
-                            navController.navigate(AppScreenEnum.Home.name)
-                        }
-                    },
-                    onDismissRequest = {
-                        keyboardViewModel.onDismissRequest()
-                    }
-                )
-            }
+//            composable(route = AppScreenEnum.Auth.name) {
+//
+//                AuthScreen(
+//                    textValue = textUiState.value.textValue,
+//                    showSheet = textUiState.value.showSheet,
+//                    onItemClick = {
+//                        if (!keyboardViewModel.onItemClick(it)){
+//                            navController.navigate(AppScreenEnum.Home.name)
+//                        }
+//                    },
+//                    onDismissRequest = {
+//                        keyboardViewModel.onDismissRequest()
+//                    }
+//                )
+//            }
         }
     }
 }

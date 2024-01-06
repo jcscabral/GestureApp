@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui.entry
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
-
 
 @Composable
 fun SignIn(
@@ -44,6 +45,9 @@ fun SignIn(
     modifier: Modifier =  Modifier
 )
 {
+    val focusRequester = remember { FocusRequester() }
+    var textFieldLoaded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -84,13 +88,20 @@ fun SignIn(
                     unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
-                modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                singleLine = true
-
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onGloballyPositioned {
+                        if (!textFieldLoaded) {
+                            focusRequester.requestFocus() // IMPORTANT
+                            textFieldLoaded = true // stop cyclic recompositions
+                        }
+                    }
             )
             for (sex in genderList){
                 Row(
@@ -129,37 +140,20 @@ fun SignIn(
 
 @Composable
 fun EntryScreen(
-    //id: Int,
     userName: String,
     age: String,
     gender: String,
-//    useOption: String,
-//    isPasswordWrong: Boolean,
-    isRegistered: Boolean,
+    //isRegistered: Boolean,
     onAgeValueChange: (String) -> Unit,
     onGenderClick: (String) -> Unit,
-    onUserRegistered: () -> Unit,
-//    onTrainClicked: (String)-> Unit,
-//    onLoginClicked: (String) -> Unit
+    onButtonClicked: () -> Unit
 ) {
-    //if (!isRegistered){
         SignIn(
             userName = userName,
             age = age,
             gender = gender ,
             onAgeValueChange = onAgeValueChange,
             onGenderClick = onGenderClick,
-            onButtonClick = onUserRegistered
+            onButtonClick = onButtonClicked
         )
-    //}
-//    else{
-//        LogIn(
-//            id = id,
-//            userName = userName,
-//            isPasswordWrong = isPasswordWrong,
-//            useOption = useOption,
-//            onTrainClicked = onTrainClicked,
-//            onLoginClick =  onLoginClicked
-//        )
-//    }
 }
