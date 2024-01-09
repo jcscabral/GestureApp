@@ -41,19 +41,15 @@ class CustomKeyboardViewModel(
         setTextValue("")
     }
     fun setMoneyType(){
-        Log.i("SET_MONEY_TYPE", "Fired")
         setKeyboardType(KeyboardTypeEnum.MONEY)
         moneyMask.reset()
     }
     fun setCpfType(){
-        Log.i("SET_CPF_TYPE", "Fired")
         setKeyboardType(KeyboardTypeEnum.CPF)
-        Log.i("CustomKeyboardViewModel.setCpfType", "currentType: ${_uiState.value.keyboardType}")
         cpfMask.reset()
     }
 
     fun setPasswordType(){
-        Log.i("SET_PASSWORD_TYPE", "Fired")
         setKeyboardType(KeyboardTypeEnum.PASSWORD)
         passwordMask.reset()
     }
@@ -72,8 +68,6 @@ class CustomKeyboardViewModel(
                 showSheet = false
             )
         }
-        Log.i("CustomKeyboardViewModel.onDismissRequest", "currentType: ${_uiState.value.keyboardType}")
-
     }
 
     private fun setTextValue(text: String){
@@ -84,19 +78,31 @@ class CustomKeyboardViewModel(
         }
     }
 
-    fun onItemClick(text: String): Boolean{
-        if (text == KEY_OK) return false
+    fun clear(){
+        setTextValue("")
+        clearMask()
+    }
+    private fun clearMask(){
+        if(_uiState.value.keyboardType == KeyboardTypeEnum.MONEY){
+            moneyMask.reset()
+        }
+        else if (_uiState.value.keyboardType == KeyboardTypeEnum.CPF){
+            cpfMask.reset()
+        }
+        else{
+            passwordMask.reset()
+        }
+    }
 
-        Log.i("CustomKeyboardViewModel.onItemClick", "currentType: ${_uiState.value.keyboardType}")
-        Log.i("CustomKeyboardViewModel.onItemClick", "text: $text")
+    fun onItemClick(text: String): Boolean{
+
+        if (text == KEY_OK) return false
 
         val formattedText = when(_uiState.value.keyboardType){
             KeyboardTypeEnum.MONEY -> moneyMask.add(text)
             KeyboardTypeEnum.CPF -> cpfMask.add(text)
             else -> passwordMask.add(text)
         }
-        Log.i("KEYBOARD_VIEWMODEL", "text: $formattedText")
-
         setTextValue(formattedText)
 
         return true

@@ -8,8 +8,10 @@
     <string name="insert_pix_key">Transferência PIX:</string>
     <string name="recipient">Destinatário: %1$s</string>
     <string name="key_pix_label">Chave PIX</string>
+
     <string name="app_controle">Controle da pesquisa</string>
-    <string name="app_signin">Registrar</string>
+    <string name="app_opcao_uso">Opção de Uso</string>
+    <string name="app_signin">Cadastro</string>
     <string name="app_login">Acessar</string>
     <string name="app_mensagem_entrada">Seu Banco é aqui</string>
     <string name="app_autenticacao">Validação</string>
@@ -30,6 +32,11 @@
     <string name="label_usuario">Usuário</string>
     <string name="label_idade">Idade</string>
     <string name="button_entrar">Entrar</string>
+
+    <string name="text_option_train">Inicialmente a opção "Teste" deve ser escolhida para ajudar o participante a
+        se familiarizar com o simulador de aplicativo bancário</string>
+    <string name="text_option_test">Opção deve ser escolihda após o participante
+        usar previamente o simulador de aplicativo bancário </string>
 
 
 </resources>

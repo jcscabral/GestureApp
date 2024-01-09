@@ -3,6 +3,7 @@ package com.example.gestureapp.ui.custom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,49 +13,51 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalTextInputService
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.ui.theme.GestureAppTheme
+
 
 @Composable
 fun CustomKeyboard(
-    //customKeyboardViewModel: CustomKeyboardViewModel = CustomKeyboardViewModel()
-    textValue: String,
+    text: String,
+    textField: String,
     label: String,
-    showSheet: Boolean,
-    onItemClick: (String )-> Unit,
-    onDismissRequest: ()-> Unit
+    onButtonClicked: () -> Unit,
+    onItemClick: (String) -> Unit
 ) {
 
-    Column {
-        // Disable default keyboard, anyways
-        CompositionLocalProvider(
-            LocalTextInputService provides null
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            //  UI: just to user check his typing
+            Text(
+                text = text
+            )
             OutlinedTextField(
-                //value = customKeyboardViewModel.textUiState.textValue,
-                value = textValue,
+                value = textField,
                 label = { Text(text = label) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -62,12 +65,12 @@ fun CustomKeyboard(
                     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
                 readOnly = true,
-                onValueChange = {
-                },
+                onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .pointerInput(Unit) {
-//                        awaitPointerEventScope {
+                    .padding(all = 16.dp)
+                    .pointerInput(Unit) {//TODO
+                        awaitPointerEventScope {
 //                            while (true) {
 //                                val event = awaitPointerEvent()
 //                                customKeyboardViewModel.updateUiState(
@@ -78,116 +81,77 @@ fun CustomKeyboard(
 //                                )
 //                                Log.i("POINTER_INPUT", "Clicked")
 //                            }
-//                        }
-                    }
-                ,
+                        }
+                    },
                 singleLine = true
             )
+            Spacer(modifier = Modifier.padding(8.dp))
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onButtonClicked
+            ) {
+                Text(
+                    text = stringResource(R.string.button_entrar),
+                    fontSize = 16.sp
+                )
+            }
         }
-        Spacer(modifier = Modifier.padding(8.dp))
-        // Here we actually get the events
-        ModalBottomLayout(
-            //customKeyboardViewModel
-            showSheet = showSheet,
-            onItemClick = onItemClick ,
-            onDismissRequest = onDismissRequest
-        )
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                KeyboardGrid(
+                    onItemClick = onItemClick
+
+                )
+            }
+        }
     }
+    Spacer(modifier = Modifier.padding(8.dp))
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalBottomLayout(
+fun KeyboardGrid(
     digitList: List<String> =  DataSource.keyboardDigits,
-    showSheet: Boolean,
-    onItemClick: (String )-> Unit,
-    onDismissRequest: ()-> Unit
+    onItemClick: (data: String)-> Unit
 ){
-    // Keep SheetValue.Expanded
-    val sheetState = rememberModalBottomSheetState(
-        confirmValueChange = {
-            false
-        }
-    )
-    //val coroutineScope = rememberCoroutineScope()
+    val gridState = rememberLazyGridState()
 
-    Column(
-    ){
-        //if(customKeyboardViewModel.textUiState.showSheet) {
-        if(showSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    //coroutineScope.launch{
-                        onDismissRequest
-                    //customKeyboardViewModel.onDismissRequest()
-                    //}
-                },
-                scrimColor = Color.Transparent,
-                tonalElevation = 5.dp,
-                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-                sheetState = sheetState,
-                containerColor = Color.Black
+    Surface(
+        color = Color.Black
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
+                state = gridState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp)
             ) {
-                Surface(
-                    color = Color.Black
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        BottomActionSheetView(
-                            digitList = digitList,
-                            onItemClick = {
-                                //coroutineScope.launch {
-                                    //customKeyboardViewModel.onItemClick(it)
-                                    onItemClick(it)
-                                //}
-                            }
-                        )
-                        Spacer(modifier = Modifier.padding(vertical = 24.dp))
+                itemsIndexed(
+                    items = digitList,
+                    key = { index: Int, _: String ->
+                        index
                     }
+                ) { _: Int, item ->
+                    ButtonDigit(
+                        data = item,
+                        onItemClick = onItemClick
+                    )
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun BottomActionSheetView(
-    digitList: List<String>,
-    onItemClick: (data: String)-> Unit
-){
-    val gridState = rememberLazyGridState()
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
-        state =  gridState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(240.dp)
-    ){
-        itemsIndexed(
-            items = digitList,
-            key = { index: Int, _: String ->
-                index
-            }
-        ){ _: Int, item ->
-            GridListItemView(
-                data = item,
-                onItemClick = onItemClick
-            )
-        }
-    }
-}
-
-
-@Composable
-fun GridListItemView(
+fun ButtonDigit(
     data: String,
     onItemClick: (data: String)-> Unit
 ){
@@ -209,7 +173,7 @@ fun GridListItemView(
         onClick = {
             if(data != ""){
                 onItemClick(data)}
-            }
+        }
     ){
         Text(
             text = data,
@@ -218,4 +182,18 @@ fun GridListItemView(
         )
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CustomKeyboardPreview() {
+    GestureAppTheme {
+        CustomKeyboard(
+            text = "Olá",
+            textField = "",
+            label = "label",
+            onButtonClicked= {},
+            onItemClick = {}
+        )
+    }
 }

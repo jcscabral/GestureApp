@@ -1,11 +1,13 @@
 package com.example.gestureapp.ui.entry
 
+import android.app.appsearch.AppSearchSession
 import android.util.Log
 import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gestureapp.data.AppSection
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.PASSWORD
 import com.example.gestureapp.data.database.User
@@ -52,6 +54,14 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         userUiState = _userUiState.asStateFlow()
     }
 
+    fun madeAttempt(made: Boolean){
+        _userUiState.update {state->
+            state.copy(
+                madeAttempt = made
+            )
+        }
+    }
+
     fun setIsPasswordWrong(isWrong: Boolean){
         _userUiState.update {state->
             state.copy(
@@ -64,6 +74,25 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         val isEqual  = attempt.trim() == PASSWORD
         setIsPasswordWrong(!isEqual)
         return isEqual
+    }
+
+    fun setIsLogged(isLogged: Boolean){
+        _userUiState.update {state->
+            state.copy(
+                isLogged = isLogged
+            )
+        }
+    }
+
+    fun setSession(){
+        if(_userUiState.value.isStarted){
+            _userUiState.update {state->
+                state.copy(
+                    session = _userUiState.value.session + 1
+                )
+            }
+            AppSection.newSection(_userUiState.value.session)
+        }
     }
 
     fun setAge(age: String){
@@ -155,10 +184,12 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
 
 data class UserUiState(
     val id: Int = 0,
-    val userName: String = "voce",
+    val userName: String = "cliente",
     val age: String = "",
     val gender: String = "",
+    val session: Int = 0,
     val useOption: String = DataSource.useOption.first(),
+    val madeAttempt: Boolean = false ,
     val isPasswordWrong: Boolean = false,
     val isRegistered: Boolean = false,
     val isLogged: Boolean = false,
@@ -170,7 +201,8 @@ fun UserUiState.toUser(): User = User(
     id = id,
     age = age.toInt(),
     gender = gender.substring(0,1) ,
-    isRegistered =  isRegistered,
+    session = session,
+    isRegistered = isRegistered,
     isTrain =  useOption == DataSource.useOption.first(),
     isLogged = isLogged,
     isStarted = isStarted,

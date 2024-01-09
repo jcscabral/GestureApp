@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity(){
     lateinit var buttonSensorManager: ComponentSensorManager
     lateinit var keyboardSensorManager: ComponentSensorManager
 
-    val uuid: UUID =  AppSection.sectionId
+    //val uuid: UUID =  AppSection.sectionId
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -54,11 +54,6 @@ class MainActivity : ComponentActivity(){
                         buttonSensorManager,
                         keyboardSensorManager
                     )
-//                    HomeScreen(
-//                        swipeSensorManager,
-//                        buttonSensorManager,
-//                        keyboardSensorManager
-//                    )
                 }
             }
         }

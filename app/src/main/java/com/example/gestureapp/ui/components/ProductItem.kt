@@ -1,4 +1,4 @@
-package com.example.gestureapp.ui.component
+package com.example.gestureapp.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.gestureapp.R
 import com.example.gestureapp.model.ComponentSensorManager
 
 

@@ -1,9 +1,13 @@
 package com.example.gestureapp.data
 
 import java.util.UUID
+abstract class AppSection {
 
-class AppSection {
-    companion object{
-        val sectionId = UUID.randomUUID()
+    companion object {
+        var sectionId: Int = 0
+        fun newSection(newSessionId: Int) {
+            sectionId = newSessionId
+        }
     }
 }
+

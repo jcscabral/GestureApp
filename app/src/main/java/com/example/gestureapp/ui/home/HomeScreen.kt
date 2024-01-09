@@ -8,17 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,13 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.R
@@ -40,7 +32,7 @@ import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.model.ComponentSensorManager
 import com.example.gestureapp.moneyFormatter
-import com.example.gestureapp.ui.component.ProductItem
+import com.example.gestureapp.ui.components.ProductItem
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -122,10 +114,8 @@ fun ProductsList(
     }
     Column(
         modifier = Modifier
-            //.pointerInteropFilter(onTouchEvent={true})
             .pointerInteropFilter() {
                 when (it.action) {
-                    // TODO make a functiom
                     MotionEvent.ACTION_DOWN -> {
                         actionCount++
                         actionType = "DOWN"
@@ -153,7 +143,7 @@ fun ProductsList(
 
         LazyRow(
             modifier = Modifier
-                .padding(8.dp)
+                //.padding(8.dp)
                 .pointerInput(filter) {
 
                     awaitPointerEventScope {
@@ -311,6 +301,7 @@ fun HorizontalProducts(swipeSensorManager: ComponentSensorManager?,
 @Composable
 fun HomeScreen(
     id: Int,
+    session: Int,
     balance: Double ,
     swipeSensorManager: ComponentSensorManager?,
     buttonSensorManager: ComponentSensorManager?,
@@ -318,8 +309,13 @@ fun HomeScreen(
     onButtonClick: ()-> Unit
 ) {
     Column {
-        Text("Olá você! n°$id")
-        Text("Seu saldo é: ${moneyFormatter(balance)}") //TODO
+        Text(
+            "Olá você! n°$id",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            "Seu saldo é: ${moneyFormatter(balance)}",
+            style = MaterialTheme.typography.titleLarge,) //TODO
 
         HorizontalProducts(
             swipeSensorManager,
@@ -337,6 +333,7 @@ fun Preview(
     balance: Double = 0.00 ,
 ){  HomeScreen(
         id = id,
+        session = 0,
         balance = balance ,
         swipeSensorManager = null,
         buttonSensorManager = null,

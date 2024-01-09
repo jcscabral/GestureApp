@@ -16,6 +16,7 @@ data class User(
     //val userName: String,
     val age: Int,
     val gender: String,
+    val session: Int,
     val isStarted: Boolean = false,
     val isRegistered: Boolean = false,
     val isLogged: Boolean = false,

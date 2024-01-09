@@ -56,7 +56,7 @@ abstract class DataSource {
         )
 
         val keyboardDigits = listOf(
-            "1", "2", "3", KEY_BACKSPACE, "4", "5", "6", KEY_OK, "7", "8", "9", " ", " ", "0", " ", " "
+            "1", "2", "3", KEY_BACKSPACE, "4", "5", "6", KEY_OK, "7", "8", "9", "", "", "0", "", ""
         )
 
 

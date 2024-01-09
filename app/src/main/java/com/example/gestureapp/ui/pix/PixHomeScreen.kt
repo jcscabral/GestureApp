@@ -20,7 +20,7 @@ import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.moneyFormatter
-import com.example.gestureapp.ui.component.ProductItem
+import com.example.gestureapp.ui.components.ProductItem
 import com.example.gestureapp.ui.custom.CustomKeyboard
 
 
@@ -126,11 +126,13 @@ fun PixMoneyScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomKeyboard(
-                textValue = textValue,
+                text = "",
+                textField = textValue,
                 label = label,
-                showSheet = showSheet,
+                //showSheet = showSheet,
+                onButtonClicked = {}, //TODO
                 onItemClick = onItemClick,
-                onDismissRequest =  onDismissRequest
+                //onDismissRequest =  onDismissRequest
             )
         }
     }
@@ -163,11 +165,13 @@ fun PixReceiverScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomKeyboard(
-                textValue = textValue,
+                text= "",
+                textField = textValue,
                 label = label,
-                showSheet = showSheet,
+                //showSheet = showSheet,
+                onButtonClicked = {}, //TODO
                 onItemClick = onItemClick,
-                onDismissRequest =  onDismissRequest
+                //onDismissRequest =  onDismissRequest
             )
         }
     }
