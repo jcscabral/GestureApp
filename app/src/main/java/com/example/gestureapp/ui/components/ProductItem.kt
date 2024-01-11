@@ -1,6 +1,7 @@
 package com.example.gestureapp.ui.components
 
 import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,17 +23,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.model.AppSensorManager
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductItem(
-    buttonSensorManager: ComponentSensorManager? =  null,
+    appSensorManager: AppSensorManager? =  null,
     nameId: Int,
     imageVector: ImageVector,
     onButtonClick: ()-> Unit,
@@ -62,32 +66,37 @@ fun ProductItem(
             Button(
                 onClick = {
                     Log.i("ONBUTTONCLICK", "nameId: ${nameId}")
-                    //if (nameId == R.string.service_pix){
-                        onButtonClick()
-                    //}
+                    touches+=1
+                    onButtonClick()
                 },
                 modifier = Modifier
-                    .pointerInput(Unit) {
-                        if(buttonSensorManager!=null){
-                            awaitPointerEventScope {
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    for (change in event.changes) {
-                                        if (!buttonSensorManager.activated!!) {
-                                            buttonSensorManager.active()
-                                        }
-                                        actionType = change.type.toString()
-                                        pressureEvent = change.pressure
-                                        tsTimeEvent = change.uptimeMillis
-                                        if (!change.pressed) {
-                                            buttonSensorManager.active(false)
-                                        }
-                                        Log.i("ONCLICK_POINTER_SCOPE", "$actionType - $pressureEvent - $tsTimeEvent")
-                                    }
-                                }
+                    .pointerInteropFilter() {
+                        when (it.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                actionType = "DOWN"
+                            }
+                            MotionEvent.ACTION_UP -> {
+                                actionType = "UP"
+                            }
+                            MotionEvent.ACTION_MOVE -> {
+                                actionType = "MOVE"
                             }
                         }
+                        //Log.i("COLUMN", "ActionMove: ${MotionEvent.ACTION_MOVE}")
+                        pressureEvent = it.pressure
+                        pointerSizeEvent = it.size
+                        val posXEvent = it.xT
+                        val posYEvent =  it.y
+//                        touchMinorEvent = it.touchMinor
+//                        touchMajorEvent = it.touchMajor
+                        tsTimeEvent = it.eventTime
+//                        tsDownTimeEvent = it.downTime
+
+                        Log.i("PRODUCT_ITEM_ACTION", "size: $pointerSize pressure $pressure ")
+                        true
                     }
+
+
                 ,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
             ) {

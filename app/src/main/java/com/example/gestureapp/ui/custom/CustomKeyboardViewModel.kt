@@ -1,18 +1,22 @@
 package com.example.gestureapp.ui.custom
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.data.CPF_SIZE
 import com.example.gestureapp.data.FACTOR_TEN
 import com.example.gestureapp.data.KEY_BACKSPACE
 import com.example.gestureapp.data.KEY_OK
 import com.example.gestureapp.data.MAX_PASSWORD_SIZE
+import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.moneyFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.lang.StringBuilder
 import java.math.BigInteger
 import kotlin.math.max
@@ -32,6 +36,32 @@ class CustomKeyboardViewModel(
     private val _uiState = MutableStateFlow(TextUiState())
     val uiState: StateFlow<TextUiState> = _uiState.asStateFlow()
 
+    private val loginSensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_LOGIN)
+    private val moneySensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_MONEY)
+    private val cpfSensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_CPF)
+
+    fun activeSensor(){
+        viewModelScope.launch {
+            when(_uiState.value.keyboardType) {
+                KeyboardTypeEnum.MONEY -> loginSensorState.active()
+                KeyboardTypeEnum.CPF -> moneySensorState.active()
+                else -> cpfSensorState.active()
+            }
+        }
+    }
+
+    fun disableSensor(){
+        viewModelScope.launch {
+            when(_uiState.value.keyboardType) {
+                KeyboardTypeEnum.MONEY -> loginSensorState.active(false)
+                KeyboardTypeEnum.CPF -> moneySensorState.active(false)
+                else -> cpfSensorState.active(false)
+            }
+        }
+    }
+
+
+
     private fun setKeyboardType(keyboardTypeEnum: KeyboardTypeEnum){
         _uiState.update { state ->
             state.copy(
@@ -48,12 +78,10 @@ class CustomKeyboardViewModel(
         setKeyboardType(KeyboardTypeEnum.CPF)
         cpfMask.reset()
     }
-
     fun setPasswordType(){
         setKeyboardType(KeyboardTypeEnum.PASSWORD)
         passwordMask.reset()
     }
-
     fun getTextAsDouble(): Double{
         return _uiState.value.textValue
             .replace("R$","")
@@ -69,7 +97,6 @@ class CustomKeyboardViewModel(
             )
         }
     }
-
     private fun setTextValue(text: String){
         _uiState.update { state ->
             state.copy(
@@ -77,7 +104,6 @@ class CustomKeyboardViewModel(
             )
         }
     }
-
     fun clear(){
         setTextValue("")
         clearMask()
@@ -93,7 +119,6 @@ class CustomKeyboardViewModel(
             passwordMask.reset()
         }
     }
-
     fun onItemClick(text: String): Boolean{
 
         if (text == KEY_OK) return false
@@ -107,12 +132,14 @@ class CustomKeyboardViewModel(
 
         return true
     }
+
 }
 
 data class TextUiState(
     val textValue: String =  "",
     val keyboardType: KeyboardTypeEnum = KeyboardTypeEnum.MONEY,
-    val showSheet: Boolean = true
+    val showSheet: Boolean = true,
+
 )
 
 class MoneyText(){

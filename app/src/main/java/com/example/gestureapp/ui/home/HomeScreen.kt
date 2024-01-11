@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,29 +29,31 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.model.BankProductItem
-import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.moneyFormatter
+import com.example.gestureapp.ui.components.ConfirmDialog
 import com.example.gestureapp.ui.components.ProductItem
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductsList(
-    swipeSensorManager: ComponentSensorManager?,
-    buttonSensorManager: ComponentSensorManager?,
     onPixButtonClick: () -> Unit,
+    swipeSensorManager: AppSensorManager = AppSensorProvider.get(
+        UserActionEnum.HORIZONTAL_SWIPE),
+    buttonSensorManager: AppSensorManager = AppSensorProvider.get(
+        UserActionEnum.BUTTON_ENTER_PIX),
     modifier: Modifier = Modifier
 ){
 
     val listOfServices: List<BankProductItem> = DataSource.bankServices
-    //val state = rememberLazyListState()
 
     var actionCount by rememberSaveable { mutableStateOf(0) }
-
-
     var actionType by remember { mutableStateOf("") }
     var pressureEvent by remember { mutableFloatStateOf(.0f) }
     var pressure = pressureEvent.toString()
@@ -143,7 +147,6 @@ fun ProductsList(
 
         LazyRow(
             modifier = Modifier
-                //.padding(8.dp)
                 .pointerInput(filter) {
 
                     awaitPointerEventScope {
@@ -171,13 +174,9 @@ fun ProductsList(
 
                                 if (!change.pressed) {
                                     swipeSensorManager.active(false)
-                                    //Log.i("POINTER_INPUT", "NO LONGER PRESSED")
                                 }
 
-                                Log.i(
-                                    "POINTER_INPUT",
-                                    "${_pointerSizeEvent} > ${_posXEvent}"
-                                )
+
                             }
                         }
                     }
@@ -186,14 +185,13 @@ fun ProductsList(
             items(listOfServices){
                 Column(horizontalAlignment = Alignment.CenterHorizontally){
                     ProductItem(
-                        buttonSensorManager = if(it.nameId == R.string.service_pix) buttonSensorManager else null ,
+                        appSensorManager = if(it.nameId == R.string.service_pix) buttonSensorManager else null ,
                         nameId = it.nameId,
                         imageVector = it.imageIcon ,
                         onButtonClick =
                             if(it.nameId == R.string.service_pix){
                                 onPixButtonClick
-                            }
-                            else{ {} }
+                            } else{ {} }
                         ,
                         modifier = modifier
                     )
@@ -204,16 +202,14 @@ fun ProductsList(
 }
 
 @Composable
-fun HorizontalProducts(swipeSensorManager: ComponentSensorManager?,
-                       buttonSensorManager: ComponentSensorManager?,
-                       onButtonClick: ()-> Unit,
-                       modifier: Modifier = Modifier
+fun HorizontalProducts(
+    onButtonClick: ()-> Unit,
+    modifier: Modifier = Modifier
 ) {
     Text(text="Serviços") //TODO think of design
     ProductsList(
-        swipeSensorManager,
-        buttonSensorManager,
-        onButtonClick,
+        onPixButtonClick = onButtonClick,
+        modifier = modifier
     )
 }
 
@@ -302,27 +298,36 @@ fun HorizontalProducts(swipeSensorManager: ComponentSensorManager?,
 fun HomeScreen(
     id: Int,
     session: Int,
-    balance: Double ,
-    swipeSensorManager: ComponentSensorManager?,
-    buttonSensorManager: ComponentSensorManager?,
-    keyboardSensorManager: ComponentSensorManager?,
+    balance: Double,
+    showDialog: MutableState<Boolean>,
+    navigateExit: ()-> Unit,
     onButtonClick: ()-> Unit
 ) {
+
     Column {
         Text(
-            "Olá você! n°$id",
+            "Olá você! n°$id, sessão $session",
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
             "Seu saldo é: ${moneyFormatter(balance)}",
-            style = MaterialTheme.typography.titleLarge,) //TODO
-
-        HorizontalProducts(
-            swipeSensorManager,
-            buttonSensorManager,
-            onButtonClick )
+            style = MaterialTheme.typography.titleLarge
+        )
+        HorizontalProducts(onButtonClick = onButtonClick )
         Spacer(modifier = Modifier.height(8.dp))
-        //PIXTransfer(keyboardSensorManager)
+        if(showDialog.value){
+            ConfirmDialog(
+                onDismissRequest = { showDialog.value = false },
+                onConfirmation = {
+                    Log.i("SHOW", "ConfirmDialog cofirmed")
+                    showDialog.value = false
+                    navigateExit()
+                },
+                dialogTitle = "Sair do aplicativo",
+                dialogText = "Tem certeza que quer sair do aplicativo?",
+                icon = Icons.Default.Info
+            )
+        }
     }
 }
 
@@ -335,9 +340,8 @@ fun Preview(
         id = id,
         session = 0,
         balance = balance ,
-        swipeSensorManager = null,
-        buttonSensorManager = null,
-        keyboardSensorManager = null,
+        showDialog = remember { mutableStateOf(false) },
+        navigateExit = {},
         onButtonClick = {}
     )
 }

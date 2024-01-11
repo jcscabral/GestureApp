@@ -3,14 +3,14 @@ import android.hardware.Sensor
 import android.hardware.SensorManager
 import com.example.gestureapp.data.UserActionEnum
 
-class ComponentSensorManager{
+class AppSensorManager{
 
     private lateinit var magneticSensor: Sensor
     private lateinit var acceleromterSensor: Sensor
     private lateinit var gyroscopeSensor: Sensor
     private var sensorManager: SensorManager
-    var actionTypeEnum : UserActionEnum =  UserActionEnum.UNKNOWN
-    private lateinit var appSensorListener : AppSensorListener
+    private var actionTypeEnum : UserActionEnum
+    private var appSensorListener : AppSensorListener
     var activated = false
 
 
@@ -28,16 +28,15 @@ class ComponentSensorManager{
     }
 
     private fun register(){
-
-        sensorManager?.registerListener(
+        sensorManager.registerListener(
             appSensorListener,
             magneticSensor,
             SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager?.registerListener(
+        sensorManager.registerListener(
             appSensorListener,
             gyroscopeSensor,
             SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager?.registerListener(
+        sensorManager.registerListener(
             appSensorListener,
             acceleromterSensor,
             SensorManager.SENSOR_DELAY_NORMAL)
@@ -47,7 +46,7 @@ class ComponentSensorManager{
         sensorManager?.unregisterListener(appSensorListener)
     }
 
-    public fun active(activated: Boolean =  true){
+    fun active(activated: Boolean =  true){
         if (activated){
             this.register()
         }

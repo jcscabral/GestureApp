@@ -16,18 +16,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.model.BankProductItem
-import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.components.ProductItem
-import com.example.gestureapp.ui.custom.CustomKeyboard
 
 
 @Composable
 fun PixHomeScreen(
     pixSendServices: List<BankProductItem> = DataSource.pixSendServices,
     pixReceiveServices: List<BankProductItem> = DataSource.pixReceiveServices,
+    appSensorManager: AppSensorManager = AppSensorProvider.get(
+        UserActionEnum.BUTTON_TRANSFER_PIX),
     onSendPixButtonClick: ()-> Unit,
     modifier: Modifier =  Modifier
 ) {
@@ -57,16 +60,15 @@ fun PixHomeScreen(
                 items(pixSendServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
-                            buttonSensorManager = null , //hummm... ??
+                            appSensorManager = appSensorManager ,
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
                             onButtonClick =
                                 if(it.nameId == R.string.pix_transfer){
                                     onSendPixButtonClick
                                 }
-                                else{ {} }
-
-                            , //TODO
+                                else{ {} } //TODO
+                            ,
                             modifier = modifier
                         )
                     }
@@ -81,7 +83,7 @@ fun PixHomeScreen(
                 items(pixReceiveServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
-                            buttonSensorManager = null , //hummm... ??
+                            appSensorManager = null ,
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
                             onButtonClick = {}, //TODO
@@ -90,89 +92,6 @@ fun PixHomeScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-fun PixMoneyScreen(
-    balance: Double,
-    textValue: String,
-    showSheet: Boolean,
-    label: String = "Valor",
-    onItemClick: (String )-> Unit,
-    onDismissRequest: ()-> Unit
-){
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Saldo atual: ${moneyFormatter(balance)}"
-        )
-        Text(
-            text = "Insira o valor da transferência",
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CustomKeyboard(
-                text = "",
-                textField = textValue,
-                label = label,
-                //showSheet = showSheet,
-                onButtonClicked = {}, //TODO
-                onItemClick = onItemClick,
-                //onDismissRequest =  onDismissRequest
-            )
-        }
-    }
-}
-
-@Composable
-fun PixReceiverScreen(
-    textValue: String,
-    label: String = "CPF",
-    showSheet: Boolean,
-    onItemClick: (String )-> Unit,
-    onDismissRequest: ()-> Unit
-){
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Para quem você vai transferir?",
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CustomKeyboard(
-                text= "",
-                textField = textValue,
-                label = label,
-                //showSheet = showSheet,
-                onButtonClicked = {}, //TODO
-                onItemClick = onItemClick,
-                //onDismissRequest =  onDismissRequest
-            )
         }
     }
 }

@@ -7,20 +7,19 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.gestureapp.data.AppSection
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.AppScreen
 import com.example.gestureapp.ui.theme.GestureAppTheme
-import java.util.UUID
 
 
 class MainActivity : ComponentActivity(){
 
-    lateinit var swipeSensorManager: ComponentSensorManager
-    lateinit var buttonSensorManager: ComponentSensorManager
-    lateinit var keyboardSensorManager: ComponentSensorManager
+//    lateinit var swipeSensorManager: AppSensorManager
+//    lateinit var buttonSensorManager: AppSensorManager
+//    lateinit var keyboardSensorManager: AppSensorManager
 
     //val uuid: UUID =  AppSection.sectionId
 
@@ -28,20 +27,20 @@ class MainActivity : ComponentActivity(){
 
         super.onCreate(savedInstanceState)
 
-        this.swipeSensorManager = ComponentSensorManager(
-            getSystemService(
-                Context.SENSOR_SERVICE) as SensorManager,
-            UserActionEnum.HORIZONTAL_SWIPE)
-
-        this.buttonSensorManager = ComponentSensorManager(
-            getSystemService(
-                Context.SENSOR_SERVICE) as SensorManager,
-            UserActionEnum.BUTTON_PRESS)
-
-        this.keyboardSensorManager = ComponentSensorManager(
-            getSystemService(
-                Context.SENSOR_SERVICE) as SensorManager,
-            UserActionEnum.KEYBOARD_TYPING)
+//        this.swipeSensorManager = AppSensorManager(
+//            getSystemService(
+//                Context.SENSOR_SERVICE) as SensorManager,
+//            UserActionEnum.HORIZONTAL_SWIPE)
+//
+//        this.buttonSensorManager = AppSensorManager(
+//            getSystemService(
+//                Context.SENSOR_SERVICE) as SensorManager,
+//            UserActionEnum.BUTTON_PRESS)
+//
+//        this.keyboardSensorManager = AppSensorManager(
+//            getSystemService(
+//                Context.SENSOR_SERVICE) as SensorManager,
+//            UserActionEnum.KEYBOARD_TYPING)
 
         setContent {
             GestureAppTheme {
@@ -49,11 +48,7 @@ class MainActivity : ComponentActivity(){
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppScreen(
-                        swipeSensorManager ,
-                        buttonSensorManager,
-                        keyboardSensorManager
-                    )
+                    AppScreen()
                 }
             }
         }
@@ -77,9 +72,9 @@ class MainActivity : ComponentActivity(){
 //    }
 }
 //@Preview(showBackground = true)
-//@Composable
-//fun AppPreview() {
-//    GestureAppTheme {
-//        HomeScreen()
-//    }
-//}
+@Composable
+fun AppPreview() {
+    GestureAppTheme {
+        AppScreen()
+    }
+}

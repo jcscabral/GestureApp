@@ -1,29 +1,21 @@
 package com.example.gestureapp.ui.entry
 
-import android.app.appsearch.AppSearchSession
-import android.util.Log
-import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gestureapp.data.AppSection
+import com.example.gestureapp.data.AppState
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.PASSWORD
 import com.example.gestureapp.data.database.User
 import com.example.gestureapp.data.database.UsersRepository
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 const val MIN_AGE = 18
@@ -85,14 +77,12 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     }
 
     fun setSession(){
-        if(_userUiState.value.isStarted){
-            _userUiState.update {state->
-                state.copy(
-                    session = _userUiState.value.session + 1
-                )
-            }
-            AppSection.newSection(_userUiState.value.session)
+        _userUiState.update {state->
+            state.copy(
+                session = _userUiState.value.session + 1
+            )
         }
+        AppState.sectionId = _userUiState.value.session
     }
 
     fun setAge(age: String){
@@ -121,6 +111,14 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         }
     }
 
+    fun setTestUseOption(){
+        _userUiState.update {state->
+            state.copy(
+                useOption = DataSource.useOption.last()
+            )
+        }
+    }
+
     fun setIsFinished(){
         _userUiState.update {state->
             state.copy(
@@ -144,6 +142,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 id = id
             )
         }
+        AppState.id = _userUiState.value.id
     }
 
     private fun isValidAge(): Boolean{

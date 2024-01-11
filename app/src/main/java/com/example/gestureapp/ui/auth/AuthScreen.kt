@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.gestureapp.AppSensorProvider
+import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.custom.CustomKeyboard
 
 

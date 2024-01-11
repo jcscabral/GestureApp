@@ -15,8 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,7 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gestureapp.AppViewModelProvider
 import com.example.gestureapp.R
-import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.ui.auth.AuthScreen
 import com.example.gestureapp.ui.control.ControlScreen
 import com.example.gestureapp.ui.custom.CustomKeyboardViewModel
@@ -38,7 +41,7 @@ import com.example.gestureapp.ui.home.HomeScreen
 import com.example.gestureapp.ui.home.HomeViewModel
 import com.example.gestureapp.ui.pix.PixHomeScreen
 import com.example.gestureapp.ui.pix.PixMoneyScreen
-import com.example.gestureapp.ui.pix.PixReceiverScreen
+import com.example.gestureapp.ui.pix.PixCPFScreen
 
 
 enum class AppScreenEnum(@StringRes val title: Int){
@@ -53,29 +56,28 @@ enum class AppScreenEnum(@StringRes val title: Int){
     Auth(R.string.app_autenticacao),
     Other(R.string.app_fora)
 }
+
 @Composable
 fun AppScreen(
-    swipeSensorManager: ComponentSensorManager,
-    buttonSensorManager: ComponentSensorManager,
-    keyboardSensorManager: ComponentSensorManager,
     entryViewModel: EntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     keyboardViewModel: CustomKeyboardViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
-    //val coroutineScope = rememberCoroutineScope()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = AppScreenEnum.valueOf(
         backStackEntry?.destination?.route ?: AppScreenEnum.Control.name
     )
+    val showDialog = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             AppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
+                showDialog =  showDialog,
                 navigateUp = { navController.navigateUp() },
-                onHomeReturn = { navController.navigate(AppScreenEnum.Option.name)}
             )
         }
     ) { innerPadding ->
@@ -116,7 +118,6 @@ fun AppScreen(
                     },
                     onButtonClicked = {
                         if(entryViewModel.addUSer()){
-                            keyboardViewModel.setPasswordType()
                             navController.navigate(AppScreenEnum.Option.name)
                             true
                         }
@@ -127,6 +128,8 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.Option.name){
+
+                keyboardViewModel.disableSensor()
                 OptionUseScreen(
                     userName = userUiState.userName,
                     useOption = userUiState.useOption,
@@ -139,12 +142,13 @@ fun AppScreen(
                             AppScreenEnum.LogIn.name)
                     }
                 )
+                keyboardViewModel.setPasswordType()
             }
             composable(route = AppScreenEnum.LogIn.name) {
+
+                keyboardViewModel.activeSensor()
                 entryViewModel.setId(allUsers)
                 AuthScreen(
-                    //id = userUiState.id,
-                    //userName = userUiState.userName,
                     madeAttempt = userUiState.madeAttempt,
                     isPasswordWrong = userUiState.isPasswordWrong,
                     onButtonClicked = {
@@ -171,26 +175,28 @@ fun AppScreen(
                         }
                     },
                     textField = keyboardUiState.value.textValue,
-//                    showSheet = keyboardUiState.value.showSheet,
-//                    onDismissRequest = {
-//                        keyboardViewModel.onDismissRequest()
-//                    }
                 )
             }
             composable(route = AppScreenEnum.Home.name) {
+
+                keyboardViewModel.disableSensor()
                 HomeScreen(
                     id = userUiState.id,
                     session = userUiState.session,
                     balance = balanceUiSate.value,
-                    swipeSensorManager = swipeSensorManager,
-                    buttonSensorManager = buttonSensorManager,
-                    keyboardSensorManager = keyboardSensorManager,
+                    showDialog = showDialog,
+                    navigateExit = {
+                        navController.navigate(AppScreenEnum.Option.name)
+                        entryViewModel.setTestUseOption()
+                    },
                     onButtonClick = {
                         navController.navigate(AppScreenEnum.PixHome.name)
                     }
                 )
             }
             composable(route = AppScreenEnum.PixHome.name) {
+
+                keyboardViewModel.disableSensor()
                 PixHomeScreen(
                     onSendPixButtonClick = {
                         keyboardViewModel.setMoneyType()
@@ -199,6 +205,8 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.PixMoney.name) {
+
+                keyboardViewModel.activeSensor()
                 PixMoneyScreen(
                     balance = balanceUiSate.value,
                     textValue = keyboardUiState.value.textValue,
@@ -216,7 +224,9 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
-                PixReceiverScreen(
+
+                keyboardViewModel.activeSensor()
+                PixCPFScreen(
                     textValue = keyboardUiState.value.textValue,
                     showSheet = keyboardUiState.value.showSheet,
                     onItemClick = {
@@ -235,21 +245,6 @@ fun AppScreen(
                     }
                 )
             }
-//            composable(route = AppScreenEnum.Auth.name) {
-//
-//                AuthScreen(
-//                    textValue = textUiState.value.textValue,
-//                    showSheet = textUiState.value.showSheet,
-//                    onItemClick = {
-//                        if (!keyboardViewModel.onItemClick(it)){
-//                            navController.navigate(AppScreenEnum.Home.name)
-//                        }
-//                    },
-//                    onDismissRequest = {
-//                        keyboardViewModel.onDismissRequest()
-//                    }
-//                )
-//            }
         }
     }
 }
@@ -261,14 +256,14 @@ fun AppBar(
     currentScreen: AppScreenEnum,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
-    onHomeReturn: () -> Unit,
+    showDialog: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         title = {
             Text(stringResource(currentScreen.title),
                 color = colorScheme.background)
-                },
+        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = colorScheme.primary //MaterialTheme.colorScheme.primaryContainer
         ),
@@ -286,10 +281,14 @@ fun AppBar(
         },
         actions = {
             if(currentScreen == AppScreenEnum.Home){
-                Button(onClick = {}) {
+                Button(onClick = {
+                    showDialog.value = true
+                }
+                ) {
                     Text(text = "Sair")
                 }
             }
         }
     )
+
 }

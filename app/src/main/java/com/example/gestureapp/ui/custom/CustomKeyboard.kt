@@ -31,8 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
+import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.theme.GestureAppTheme
 
 
@@ -163,6 +166,11 @@ fun ButtonDigit(
             .fillMaxWidth()
             .height(60.dp)
             .padding(4.dp)
+            .pointerInput(Unit) {//TODO
+                awaitPointerEventScope {
+
+                }
+            }
         ,
         colors = ButtonDefaults.textButtonColors(
             containerColor = Color.DarkGray,

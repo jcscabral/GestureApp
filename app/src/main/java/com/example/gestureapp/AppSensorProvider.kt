@@ -1,15 +1,14 @@
 package com.example.gestureapp
 
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.ComponentSensorManager
+import com.example.gestureapp.model.AppSensorManager
 
 object AppSensorProvider {
 
-    val sensorManager = MainApplication.sensorManager
+    private val sensorManager = MainApplication.sensorManager
 
-    fun getComponentSensorManager(actionTypeEnum: UserActionEnum): ComponentSensorManager{
-        return ComponentSensorManager(sensorManager, actionTypeEnum)
+    fun get(userActionEnum: UserActionEnum): AppSensorManager{
+        return AppSensorManager(sensorManager, userActionEnum)
     }
 
 }
