@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gestureapp.ui.custom.CustomKeyboardViewModel
 import com.example.gestureapp.ui.entry.EntryViewModel
 import com.example.gestureapp.ui.home.HomeViewModel
+import com.example.gestureapp.ui.pix.PixViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -19,13 +20,19 @@ object AppViewModelProvider {
         }
 
         initializer {
+            CustomKeyboardViewModel(
+                this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
             HomeViewModel(
                 this.createSavedStateHandle()
             )
         }
 
         initializer {
-            CustomKeyboardViewModel(
+            PixViewModel(
                 this.createSavedStateHandle()
             )
         }

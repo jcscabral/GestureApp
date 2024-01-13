@@ -41,7 +41,8 @@ import com.example.gestureapp.ui.home.HomeScreen
 import com.example.gestureapp.ui.home.HomeViewModel
 import com.example.gestureapp.ui.pix.PixHomeScreen
 import com.example.gestureapp.ui.pix.PixMoneyScreen
-import com.example.gestureapp.ui.pix.PixCPFScreen
+import com.example.gestureapp.ui.pix.PixCpfScreen
+import com.example.gestureapp.ui.pix.PixViewModel
 
 
 enum class AppScreenEnum(@StringRes val title: Int){
@@ -61,6 +62,7 @@ enum class AppScreenEnum(@StringRes val title: Int){
 fun AppScreen(
     entryViewModel: EntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    pixViewModel: PixViewModel = viewModel(factory = AppViewModelProvider.Factory),
     keyboardViewModel: CustomKeyboardViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
@@ -77,15 +79,23 @@ fun AppScreen(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 showDialog =  showDialog,
-                navigateUp = { navController.navigateUp() },
+                navigateUp = {
+                    when(currentScreen){
+                        AppScreenEnum.PixReceiver -> keyboardViewModel.setMoneyType()
+                        else -> keyboardViewModel.setPasswordType()
+                    }
+                    keyboardViewModel.disableSensor()
+                    navController.navigateUp()
+                },
             )
         }
     ) { innerPadding ->
-        val userUiState by entryViewModel.userUiState.collectAsState()
         val allUsers by entryViewModel.allUsers.collectAsState()
 
+        val userUiState by entryViewModel.userUiState.collectAsState()
         val keyboardUiState = keyboardViewModel.uiState.collectAsState()
         val balanceUiSate = homeViewModel.balanceUiState.collectAsState()
+        val pixUiState by pixViewModel.uiState.collectAsState()
 
         NavHost(
             navController = navController,
@@ -96,7 +106,7 @@ fun AppScreen(
                 ControlScreen(
                     currentUserId = userUiState.id,
                     onNewUser = {
-                        entryViewModel.newUiState()
+                        //entryViewModel.newUiState()
                         navController.navigate(
                             AppScreenEnum.SignIn.name
                         )
@@ -138,6 +148,7 @@ fun AppScreen(
                         entryViewModel.setUseOption(it)
                     },
                     onButtonClicked = {
+                        keyboardViewModel.clear()
                         navController.navigate(
                             AppScreenEnum.LogIn.name)
                     }
@@ -149,6 +160,9 @@ fun AppScreen(
                 keyboardViewModel.activeSensor()
                 entryViewModel.setId(allUsers)
                 AuthScreen(
+                    userActionEnum = UserActionEnum.KEYBOARD_LOGIN,
+                    text =  "Olá cliente, seja bem-vindo!",
+                    textField = keyboardUiState.value.textValue,
                     madeAttempt = userUiState.madeAttempt,
                     isPasswordWrong = userUiState.isPasswordWrong,
                     onButtonClicked = {
@@ -173,8 +187,7 @@ fun AppScreen(
                         else{
                             entryViewModel.madeAttempt(false)
                         }
-                    },
-                    textField = keyboardUiState.value.textValue,
+                    }
                 )
             }
             composable(route = AppScreenEnum.Home.name) {
@@ -186,10 +199,11 @@ fun AppScreen(
                     balance = balanceUiSate.value,
                     showDialog = showDialog,
                     navigateExit = {
-                        navController.navigate(AppScreenEnum.Option.name)
                         entryViewModel.setTestUseOption()
+                        navController.navigate(AppScreenEnum.Option.name)
                     },
                     onButtonClick = {
+                        Log.i("YEAH", "AppScreen...onButtonClick")
                         navController.navigate(AppScreenEnum.PixHome.name)
                     }
                 )
@@ -207,42 +221,99 @@ fun AppScreen(
             composable(route = AppScreenEnum.PixMoney.name) {
 
                 keyboardViewModel.activeSensor()
+
                 PixMoneyScreen(
+                    madeAttempt = pixUiState.madeAttempt,
+                    isMoneyWrong = pixUiState.isMoneyWrong,
                     balance = balanceUiSate.value,
-                    textValue = keyboardUiState.value.textValue,
-                    showSheet = keyboardUiState.value.showSheet,
-                    onItemClick = {
-                        if (!keyboardViewModel.onItemClick(it)){
-                            homeViewModel.minus(keyboardViewModel.getTextAsDouble())
+                    textField = keyboardUiState.value.textValue,
+                    onButtonClicked = {
+                        pixViewModel.madeAttempt(true)
+                        val deduct = keyboardViewModel.getTextAsDouble()
+                        if (pixViewModel.isMoneyMatched(deduct)) {
+                            homeViewModel.minus(deduct)
+                            keyboardViewModel.clear()
                             keyboardViewModel.setCpfType()
                             navController.navigate(AppScreenEnum.PixReceiver.name)
                         }
                     },
-                    onDismissRequest = {
-                        keyboardViewModel.onDismissRequest()
-                    }
+                    onKeyboardClicked = {
+                        if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
+                            pixViewModel.madeAttempt(true)
+                            if (pixViewModel.isMoneyMatched(keyboardViewModel.getTextAsDouble())) {
+                                keyboardViewModel.clear()
+                                keyboardViewModel.setCpfType()
+                                navController.navigate(AppScreenEnum.PixReceiver.name)
+                            }
+                        }
+                        else{
+                            pixViewModel.madeAttempt(false)
+                        }
+                    },
                 )
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
 
                 keyboardViewModel.activeSensor()
-                PixCPFScreen(
-                    textValue = keyboardUiState.value.textValue,
-                    showSheet = keyboardUiState.value.showSheet,
-                    onItemClick = {
-                        if (!keyboardViewModel.onItemClick(it)){
+
+                PixCpfScreen(
+                    madeAttempt = pixUiState.madeAttempt,
+                    isCpfWrong = pixUiState.isCpfWrong,
+                    onButtonClicked = {
+                        pixViewModel.madeAttempt(true)
+                        if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue)) {
+                            keyboardViewModel.clear()
+                            keyboardViewModel.setPasswordType()
+                            navController.navigate(AppScreenEnum.Auth.name)
+                        }
+                    },
+                    onKeyboardClicked = {
+                        if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
+                            pixViewModel.madeAttempt(true)
+                            if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue)) {
+                                keyboardViewModel.clear()
+                                keyboardViewModel.setPasswordType()
+                                navController.navigate(AppScreenEnum.Auth.name)
+                            }
+                        }
+                        else{
+                            pixViewModel.madeAttempt(false)
+                        }
+                    },
+                    textField = keyboardUiState.value.textValue,
+                )
+            }
+            composable(route = AppScreenEnum.Auth.name) {
+
+                keyboardViewModel.activeSensor()
+                entryViewModel.setId(allUsers)
+                AuthScreen(
+                    userActionEnum = UserActionEnum.KEYBOARD_AUTH,
+                    text = "Autenticação da senha",
+                    madeAttempt = userUiState.madeAttempt,
+                    isPasswordWrong = userUiState.isPasswordWrong,
+                    onButtonClicked = {
+                        entryViewModel.madeAttempt(true)
+                        if (entryViewModel.isMatched(keyboardUiState.value.textValue)) {
+                            keyboardViewModel.clear()
+                            homeViewModel.confirm()
+                            navController.navigate(AppScreenEnum.Home.name) //TODO
+                        }
+                    },
+                    onKeyboardClicked = {
+                        if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
                             entryViewModel.madeAttempt(true)
                             if (entryViewModel.isMatched(keyboardUiState.value.textValue)) {
-                                navController.navigate(AppScreenEnum.Home.name)
+                                homeViewModel.confirm()
+                                keyboardViewModel.clear()
+                                navController.navigate(AppScreenEnum.Home.name) //TODO
                             }
                         }
                         else{
                             entryViewModel.madeAttempt(false)
                         }
                     },
-                    onDismissRequest = {
-                        keyboardViewModel.onDismissRequest()
-                    }
+                    textField = keyboardUiState.value.textValue,
                 )
             }
         }

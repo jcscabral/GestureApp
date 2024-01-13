@@ -27,8 +27,8 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    private var _userUiState = MutableStateFlow(UserUiState())
-    var userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
+    private val _userUiState = MutableStateFlow(UserUiState())
+    val userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
 
     val allUsers = usersRepository
         .getAllUsersStream()
@@ -41,10 +41,10 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
             initialValue = AllUsers()
         )
 
-    fun newUiState(){
-        _userUiState = MutableStateFlow(UserUiState())
-        userUiState = _userUiState.asStateFlow()
-    }
+//    fun newUiState(){
+//        _userUiState = MutableStateFlow(UserUiState())
+//        userUiState = _userUiState.asStateFlow()
+//    }
 
     fun madeAttempt(made: Boolean){
         _userUiState.update {state->
@@ -63,7 +63,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     }
 
     fun isMatched(attempt: String): Boolean{
-        val isEqual  = attempt.trim() == PASSWORD
+        val isEqual = attempt.trim() == PASSWORD
         setIsPasswordWrong(!isEqual)
         return isEqual
     }

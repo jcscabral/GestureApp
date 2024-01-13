@@ -1,4 +1,4 @@
-package com.example.gestureapp.model
+package com.example.gestureapp.helpers
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent

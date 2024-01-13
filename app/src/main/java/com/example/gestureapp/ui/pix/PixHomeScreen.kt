@@ -20,7 +20,7 @@ import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.AppSensorManager
+import com.example.gestureapp.helpers.AppSensorManager
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.ui.components.ProductItem
 
@@ -60,9 +60,9 @@ fun PixHomeScreen(
                 items(pixSendServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
-                            appSensorManager = appSensorManager ,
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
+                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME,
                             onButtonClick =
                                 if(it.nameId == R.string.pix_transfer){
                                     onSendPixButtonClick
@@ -83,9 +83,9 @@ fun PixHomeScreen(
                 items(pixReceiveServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
-                            appSensorManager = null ,
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
+                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME,
                             onButtonClick = {}, //TODO
                             modifier = modifier
                         )

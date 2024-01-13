@@ -1,6 +1,4 @@
 package com.example.gestureapp
-import android.content.Context
-import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,8 +7,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.AppScreen
 import com.example.gestureapp.ui.theme.GestureAppTheme
 

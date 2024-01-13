@@ -2,39 +2,37 @@ package com.example.gestureapp.ui.pix
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.ui.custom.CustomKeyboard
 
 
 @Composable
-fun PixMoneyScreen(
+fun PixCpfScreen(
+    //id: Int,
+    //userName: String,
     madeAttempt: Boolean,
-    isMoneyWrong: Boolean,
-    balance: Double,
-    textField: String,
-    label: String = "Valor",
+    isCpfWrong: Boolean,
     onButtonClicked: ()-> Unit,
-    onKeyboardClicked: (String )-> Unit,
-    odifier: Modifier= Modifier
-
+    onKeyboardClicked: (String) -> Unit,
+    textField: String
 ){
     val context = LocalContext.current
 
     CustomKeyboard(
         userActionEnum = UserActionEnum.KEYBOARD_PIX_CPF,
-        text = "Insira o valor",
+        text = "Insira a chave do PIX",
         textField = textField,
-        label = if (madeAttempt && isMoneyWrong) "Valor errado" else "Valor",
+        label = if (madeAttempt && isCpfWrong) "CPF errado" else "Cpf",
         onButtonClicked = onButtonClicked,
         onItemClick = onKeyboardClicked,
     )
-    if (madeAttempt && isMoneyWrong){
+    if (madeAttempt && isCpfWrong){
         Toast.makeText(
-            context, "Valor incorreto",
+            context, "CPF incorreta",
             Toast.LENGTH_SHORT).show()
     }
+
 //    Column(
 //        modifier = Modifier
 //            .verticalScroll(rememberScrollState())
@@ -43,10 +41,7 @@ fun PixMoneyScreen(
 //        horizontalAlignment = Alignment.CenterHorizontally
 //    ) {
 //        Text(
-//            text = "Saldo atual: ${moneyFormatter(balance)}"
-//        )
-//        Text(
-//            text = "Insira o valor da transferência",
+//            text = "Para quem você vai transferir?",
 //            style = MaterialTheme.typography.titleLarge,
 //        )
 //        Column(
@@ -56,7 +51,16 @@ fun PixMoneyScreen(
 //            verticalArrangement = Arrangement.spacedBy(16.dp),
 //            horizontalAlignment = Alignment.CenterHorizontally
 //        ) {
-
+//            CustomKeyboard(
+//                userActionEnum = UserActionEnum.KEYBOARD_PIX_CPF,
+//                text= "",
+//                textField = textValue,
+//                label = label,
+//                //showSheet = showSheet,
+//                onButtonClicked = {}, //TODO
+//                onItemClick = onItemClick,
+//                //onDismissRequest =  onDismissRequest
+//            )
 //        }
 //    }
 }

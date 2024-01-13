@@ -1,7 +1,8 @@
-package com.example.gestureapp.model
+package com.example.gestureapp.helpers
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.helpers.AppSensorListener
 
 class AppSensorManager{
 

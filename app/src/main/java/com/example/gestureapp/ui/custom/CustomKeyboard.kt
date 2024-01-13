@@ -23,24 +23,28 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.theme.GestureAppTheme
+import com.example.gestureapp.helpers.AppEvents.Companion.onDigitPointerEvent
+import com.example.gestureapp.helpers.AppEvents.Companion.onPointerEvent
+import com.example.gestureapp.ui.theme.CyanKeyboard
 
 
 @Composable
 fun CustomKeyboard(
+    userActionEnum: UserActionEnum,
     text: String,
     textField: String,
     label: String,
@@ -71,21 +75,7 @@ fun CustomKeyboard(
                 onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 16.dp)
-                    .pointerInput(Unit) {//TODO
-                        awaitPointerEventScope {
-//                            while (true) {
-//                                val event = awaitPointerEvent()
-//                                customKeyboardViewModel.updateUiState(
-//                                    customKeyboardViewModel.itemUiState.copy(
-//                                        textValue = customKeyboardViewModel.itemUiState.textValue,
-//                                        showSheet = true
-//                                    )
-//                                )
-//                                Log.i("POINTER_INPUT", "Clicked")
-//                            }
-                        }
-                    },
+                    .padding(all = 16.dp),
                 singleLine = true
             )
             Spacer(modifier = Modifier.padding(8.dp))
@@ -104,6 +94,7 @@ fun CustomKeyboard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 KeyboardGrid(
+                    userActionEnum,
                     onItemClick = onItemClick
 
                 )
@@ -113,8 +104,10 @@ fun CustomKeyboard(
     Spacer(modifier = Modifier.padding(8.dp))
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun KeyboardGrid(
+    userActionEnum: UserActionEnum,
     digitList: List<String> =  DataSource.keyboardDigits,
     onItemClick: (data: String)-> Unit
 ){
@@ -125,10 +118,12 @@ fun KeyboardGrid(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+            ,
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            horizontalAlignment = Alignment.CenterHorizontally,
+
+            ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
                 contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
@@ -144,6 +139,7 @@ fun KeyboardGrid(
                     }
                 ) { _: Int, item ->
                     ButtonDigit(
+                        userActionEnum,
                         data = item,
                         onItemClick = onItemClick
                     )
@@ -153,8 +149,10 @@ fun KeyboardGrid(
     }
 }
 
+//@OptIn(ExperimentalCompos   eUiApi::class)
 @Composable
 fun ButtonDigit(
+    userActionEnum: UserActionEnum,
     data: String,
     onItemClick: (data: String)-> Unit
 ){
@@ -166,15 +164,22 @@ fun ButtonDigit(
             .fillMaxWidth()
             .height(60.dp)
             .padding(4.dp)
-            .pointerInput(Unit) {//TODO
+            .pointerInput(Unit) {
                 awaitPointerEventScope {
-
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        onDigitPointerEvent(
+                            userActionEnum,
+                            event,
+                            data
+                        )
+                    }
                 }
             }
         ,
         colors = ButtonDefaults.textButtonColors(
             containerColor = Color.DarkGray,
-            contentColor = if (data != "OK") Color.White else Color.Cyan,
+            contentColor = if (data != "OK") Color.White else CyanKeyboard,
             disabledContainerColor = Color.Gray,
             disabledContentColor =  Color.White
         ),
@@ -185,7 +190,7 @@ fun ButtonDigit(
     ){
         Text(
             text = data,
-            fontSize = 15.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
     }
@@ -197,6 +202,7 @@ fun ButtonDigit(
 fun CustomKeyboardPreview() {
     GestureAppTheme {
         CustomKeyboard(
+            userActionEnum =  UserActionEnum.KEYBOARD_PIX_CPF,
             text = "Olá",
             textField = "",
             label = "label",

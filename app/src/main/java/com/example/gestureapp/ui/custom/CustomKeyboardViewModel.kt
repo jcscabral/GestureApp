@@ -10,7 +10,7 @@ import com.example.gestureapp.data.KEY_BACKSPACE
 import com.example.gestureapp.data.KEY_OK
 import com.example.gestureapp.data.MAX_PASSWORD_SIZE
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.AppSensorManager
+import com.example.gestureapp.helpers.AppSensorManager
 import com.example.gestureapp.moneyFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,15 +52,17 @@ class CustomKeyboardViewModel(
 
     fun disableSensor(){
         viewModelScope.launch {
-            when(_uiState.value.keyboardType) {
-                KeyboardTypeEnum.MONEY -> loginSensorState.active(false)
-                KeyboardTypeEnum.CPF -> moneySensorState.active(false)
-                else -> cpfSensorState.active(false)
-            }
+            loginSensorState.active(false)
+            moneySensorState.active(false)
+            cpfSensorState.active(false)
+
+//            when(_uiState.value.keyboardType) {
+//                KeyboardTypeEnum.MONEY -> loginSensorState.active(false)
+//                KeyboardTypeEnum.CPF -> moneySensorState.active(false)
+//                else -> cpfSensorState.active(false)
+//            }
         }
     }
-
-
 
     private fun setKeyboardType(keyboardTypeEnum: KeyboardTypeEnum){
         _uiState.update { state ->
@@ -72,16 +74,15 @@ class CustomKeyboardViewModel(
     }
     fun setMoneyType(){
         setKeyboardType(KeyboardTypeEnum.MONEY)
-        moneyMask.reset()
     }
+
     fun setCpfType(){
         setKeyboardType(KeyboardTypeEnum.CPF)
-        cpfMask.reset()
     }
     fun setPasswordType(){
         setKeyboardType(KeyboardTypeEnum.PASSWORD)
-        passwordMask.reset()
     }
+
     fun getTextAsDouble(): Double{
         return _uiState.value.textValue
             .replace("R$","")

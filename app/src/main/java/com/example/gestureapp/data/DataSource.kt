@@ -46,6 +46,27 @@ abstract class DataSource {
                 BankProductItem(R.string.pix_deposit, Icons.Rounded.Face)
             )
 
+        val moneyList: List<Double> =
+            listOf(
+                820.00,
+                1590.00,
+                3499.99,
+                120.00,
+                1330.50,
+                170.80,
+                478.00
+            )
+        val cpfList: List<String> =
+            listOf(
+                "01009537431",
+                "12345678901", //TODO
+                "12345678901",
+                "12345678901",
+                "12345678901",
+                "12345678901",
+                "12345678901"
+            )
+
         val gender =  listOf(
             "Masculino",
             "Feminino"

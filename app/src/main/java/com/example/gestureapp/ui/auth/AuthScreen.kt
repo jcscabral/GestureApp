@@ -1,16 +1,10 @@
 package com.example.gestureapp.ui.auth
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.model.AppSensorManager
 import com.example.gestureapp.ui.custom.CustomKeyboard
 
 
@@ -18,18 +12,21 @@ import com.example.gestureapp.ui.custom.CustomKeyboard
 fun AuthScreen(
     //id: Int,
     //userName: String,
+    userActionEnum : UserActionEnum,
+    text: String,
+    textField: String,
     madeAttempt: Boolean,
     isPasswordWrong: Boolean,
     onButtonClicked: ()-> Unit,
     onKeyboardClicked: (String) -> Unit,
-    textField: String,
     modifier: Modifier= Modifier
 )
 {
     val context = LocalContext.current
 
     CustomKeyboard(
-        text = "Olá cliente, seja bem-vindo!",
+        userActionEnum = userActionEnum,
+        text = text,
         textField = textField,
         label = if (madeAttempt && isPasswordWrong) "Senha errada" else "Senha",
         onButtonClicked = onButtonClicked,
