@@ -14,7 +14,7 @@ abstract class AppEvents {
             event: MotionEvent): Boolean{
 
             val id = AppState.id
-            val sessionId = AppState.sectionId
+            val sessionId = AppState.actionNumber
             val action = event.action
             val size = event.size
             val pressure = event.pressure
@@ -36,7 +36,7 @@ abstract class AppEvents {
             digit: String = ""): Boolean{
 
             val id = AppState.id
-            val sessionId = AppState.sectionId
+            val sessionId = AppState.actionNumber
             val action = event.action
             val size = event.size
             val pressure = event.pressure
@@ -68,7 +68,7 @@ abstract class AppEvents {
             for (change in event.changes) {
 
                 val id = AppState.id
-                val sessionId = AppState.sectionId
+                val sessionId = AppState.actionNumber
                 val position = change.position
                 val action = change.type.toString()
                 val x = position.x
@@ -97,7 +97,7 @@ abstract class AppEvents {
                     appSensorManager?.active()
                 }
                 val id = AppState.id
-                val sessionId = AppState.sectionId
+                val sessionId = AppState.actionNumber
                 val position = change.position
                 val action = change.type.toString()
                 val x = position.x

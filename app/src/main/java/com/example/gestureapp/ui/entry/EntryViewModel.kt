@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gestureapp.data.AppState
 import com.example.gestureapp.data.DataSource
-import com.example.gestureapp.data.PASSWORD
 import com.example.gestureapp.data.database.User
 import com.example.gestureapp.data.database.UsersRepository
+import com.example.gestureapp.now
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +27,8 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
+    private val numberOfActions =  DataSource.cpfList.size
+
     private val _userUiState = MutableStateFlow(UserUiState())
     val userUiState: StateFlow<UserUiState> = _userUiState.asStateFlow()
 
@@ -34,55 +36,27 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         .getAllUsersStream()
         .filterNotNull()
         .map { AllUsers(it) }
-        .stateIn( // flow to stateflow
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             //started = SharingStarted.Eagerly,
             initialValue = AllUsers()
         )
 
-//    fun newUiState(){
-//        _userUiState = MutableStateFlow(UserUiState())
-//        userUiState = _userUiState.asStateFlow()
+//    fun madeAttempt(made: Boolean){
+//        _userUiState.update {state->
+//            state.copy(
+//                madeAttempt = made
+//            )
+//        }
 //    }
 
-    fun madeAttempt(made: Boolean){
-        _userUiState.update {state->
-            state.copy(
-                madeAttempt = made
-            )
-        }
-    }
-
-    fun setIsPasswordWrong(isWrong: Boolean){
-        _userUiState.update {state->
-            state.copy(
-                isPasswordWrong = isWrong
-            )
-        }
-    }
-
-    fun isMatched(attempt: String): Boolean{
-        val isEqual = attempt.trim() == PASSWORD
-        setIsPasswordWrong(!isEqual)
-        return isEqual
-    }
-
-    fun setIsLogged(isLogged: Boolean){
+    fun setIsLogged(isLogged: Boolean = true){
         _userUiState.update {state->
             state.copy(
                 isLogged = isLogged
             )
         }
-    }
-
-    fun setSession(){
-        _userUiState.update {state->
-            state.copy(
-                session = _userUiState.value.session + 1
-            )
-        }
-        AppState.sectionId = _userUiState.value.session
     }
 
     fun setAge(age: String){
@@ -119,6 +93,20 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         }
     }
 
+    fun nextAction(){
+        _userUiState.update { state->
+            state.copy(
+                actionNumber = _userUiState.value.actionNumber + 1
+            )
+        }
+        if (_userUiState.value.actionNumber == numberOfActions){
+            setIsFinished()
+        }
+        else{
+            AppState.actionNumber =  _userUiState.value.actionNumber
+        }
+    }
+
     fun setIsFinished(){
         _userUiState.update {state->
             state.copy(
@@ -152,7 +140,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         return ageInt in MIN_AGE..MAX_AGE
     }
 
-    fun isGenreSet(): Boolean{
+    private fun isGenreSet(): Boolean{
         val genre = _userUiState.value.gender
         return !genre.isNullOrEmpty()
     }
@@ -166,18 +154,8 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         return false
     }
 
-
-//    private fun getLastUser(){
-//           viewModelScope.launch {
-//               val currenUsers  = allUsers.value.users
-//           }
-//    }
-
     private fun saveUser() = runBlocking{
         usersRepository.insertUser((_userUiState.value).toUser())
-        //val currentUsers  = allUsers.value.users
-        //setId(currentUsers.first().id)
-
     }
 }
 
@@ -186,28 +164,30 @@ data class UserUiState(
     val userName: String = "cliente",
     val age: String = "",
     val gender: String = "",
-    val session: Int = 0,
+    val actionNumber: Int = 1,
     val useOption: String = DataSource.useOption.first(),
-    val madeAttempt: Boolean = false ,
-    val isPasswordWrong: Boolean = false,
     val isRegistered: Boolean = false,
     val isLogged: Boolean = false,
     val isStarted: Boolean = false,
-    val isFinished: Boolean = false
+    val isFinished: Boolean = false,
+    val initDateTime: String? = now(),
+    val endDateTime: String? = null
 )
 
 fun UserUiState.toUser(): User = User(
     id = id,
     age = age.toInt(),
     gender = gender.substring(0,1) ,
-    session = session,
+    actionNumber = actionNumber,
     isRegistered = isRegistered,
     isTrain =  useOption == DataSource.useOption.first(),
     isLogged = isLogged,
     isStarted = isStarted,
-    isFinished =  isFinished
+    isFinished = isFinished,
+    initDateTime = initDateTime,
+    endDateTime = endDateTime
 )
+
 data class AllUsers(
-    //val users: List<User> =listOf<User>().sortedByDescending { it.id }
     val users: List<User> =listOf()
 )

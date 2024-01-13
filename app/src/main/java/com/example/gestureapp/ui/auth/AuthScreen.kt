@@ -10,8 +10,6 @@ import com.example.gestureapp.ui.custom.CustomKeyboard
 
 @Composable
 fun AuthScreen(
-    //id: Int,
-    //userName: String,
     userActionEnum : UserActionEnum,
     text: String,
     textField: String,

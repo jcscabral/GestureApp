@@ -31,7 +31,7 @@ class AppSensorListener: SensorEventListener {
             4 -> "GYROSCOPE"
             else -> "OTHER SENSOR"
         }
-        Log.i(eventName, "action:${actionTypeEnum};id:${AppState.id};session:${AppState.sectionId};" +
+        Log.i(eventName, "action:${actionTypeEnum};id:${AppState.id};session:${AppState.actionNumber};" +
                 "X:${event.values[0]};Y:${event.values[1]};Z:${event.values[2]};Ts:${event.timestamp}")
     }
     override fun onSensorChanged(event: SensorEvent?) {
@@ -48,14 +48,14 @@ class AppSensorListener: SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        Log.i("CHANGED", "id:${AppState.id};section:${AppState.sectionId}")
+        Log.i("CHANGED", "id:${AppState.id};section:${AppState.actionNumber}")
     }
 
     fun offer(event: SensorEvent) = runBlocking{events.send(event)}
 
     fun process() = scope.launch {
         events.consumeEach {
-            Log.i("CONSUMED", "Uuid: ${AppState.sectionId} - SensorMonitor")
+            Log.i("CONSUMED", "Uuid: ${AppState.actionNumber} - SensorMonitor")
         }
     }
 

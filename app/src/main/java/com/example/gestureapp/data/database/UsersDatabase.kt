@@ -21,7 +21,7 @@ abstract class UsersDatabase: RoomDatabase() {
         private var Instance: UsersDatabase? = null
 
         fun getDatabase(context: Context):UsersDatabase{
-            context.deleteDatabase("user_database") //Bradock approach TODO
+            //context.deleteDatabase("user_database") //Bradock approach TODO
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UsersDatabase::class.java, "user_database")
                     .build().also { Instance = it }

@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
+import com.example.gestureapp.data.AppState
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.model.BankProductItem
@@ -96,8 +97,7 @@ fun HorizontalProducts(
 
 @Composable
 fun HomeScreen(
-    id: Int,
-    session: Int,
+    userName: String,
     balance: Double,
     showDialog: MutableState<Boolean>,
     navigateExit: ()-> Unit,
@@ -106,7 +106,7 @@ fun HomeScreen(
 
     Column {
         Text(
-            "Olá você! n°$id, sessão $session",
+            "Olá $userName! n°${AppState.id}, ação ${AppState.actionNumber}",
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
@@ -137,8 +137,7 @@ fun Preview(
     id: Int = 0 ,
     balance: Double = 0.00 ,
 ){  HomeScreen(
-    id = id,
-    session = 0,
+    userName = "Balboa",
     balance = balance ,
     showDialog = remember { mutableStateOf(false) },
     navigateExit = {},

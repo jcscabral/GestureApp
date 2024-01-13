@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui.pix
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.gestureapp.data.AppState
@@ -26,7 +25,7 @@ class PixViewModel(
     }
 
     private fun setCurrentCpf(){
-        val currentId = max(AppState.sectionId -1, 0)
+        val currentId = max(AppState.actionNumber -1, 0)
         _uiState.update { state->
             state.copy(
                 currentCpf = DataSource.cpfList[currentId]
@@ -35,7 +34,7 @@ class PixViewModel(
     }
 
     private fun setCurrentMoney(){
-        val currentId = max(AppState.sectionId -1, 0)
+        val currentId = max(AppState.actionNumber -1, 0)
         _uiState.update { state->
             state.copy(
                 currentMoney = DataSource.moneyList[currentId]
@@ -59,7 +58,7 @@ class PixViewModel(
         }
     }
 
-    fun madeAttempt(made: Boolean){
+    fun madeAttempt(made: Boolean = true){
         _uiState.update {state->
             state.copy(
                 madeAttempt = made

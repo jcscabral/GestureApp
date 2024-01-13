@@ -3,10 +3,12 @@ package com.example.gestureapp.ui.control
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -29,21 +31,24 @@ fun ItemsLazyColumn(
             .padding(16.dp)
     ){
         items(data){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                Card(modifier = modifier.padding(4.dp)){
-                    Text(it.id.toString() )
-                }
-                Card(modifier = modifier.padding(4.dp)) {
-                    Text(it.age.toString())
-                }
-                Card(modifier = modifier.padding(4.dp)){
-                    Text(it.date)
-                }
-                Card(modifier = modifier.padding(4.dp)){
-                    Text(it.isRegistered.toString())
-                }
-                Card(modifier = modifier.padding(4.dp)){
-                    Text(it.isFinished.toString())
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier =  modifier
+                    .padding(8.dp)
+            ){
+                Card(modifier = modifier
+                    .padding(4.dp)
+                    .fillMaxHeight()
+                    .fillMaxWidth()){
+                    Text("Id: ${it.id}",
+                        modifier =  Modifier.padding(start = 4.dp))
+                    Text("Age: ${it.age}" ,
+                        modifier =  Modifier.padding(start = 4.dp))
+                    Text("Section: ${it.actionNumber}",
+                        modifier =  Modifier.padding(start = 4.dp))
+                    Text("Registered: ${it.isRegistered}",
+                        modifier =  Modifier.padding(start = 4.dp))
+                    Text("Finished: ${it.isFinished}",
+                        modifier =  Modifier.padding(start = 4.dp))
                 }
             }
         }

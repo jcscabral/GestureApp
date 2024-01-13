@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui.home
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,17 +17,14 @@ class HomeViewModel(
     val balanceUiState: StateFlow<Double> = _balanceUiState.asStateFlow()
     private var transactionBalance: Double = balanceUiState.value
 
-    fun minus(deduct: Double){
-        Log.i("FIRED", "minus: _balanceUiState:$_balanceUiState")
+    fun deduct(deduct: Double){
         transactionBalance = _balanceUiState.value - deduct
-        Log.i("FIRED", "transactionBalance:$transactionBalance")
     }
 
-    fun confirm(){
+    fun confirmTransaction(){
         _balanceUiState.update {
             transactionBalance
         }
-        Log.i("FIRED", "confirm: _balanceUiState:$_balanceUiState")
     }
 
 }
