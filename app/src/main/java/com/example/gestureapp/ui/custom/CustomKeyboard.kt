@@ -46,6 +46,8 @@ fun CustomKeyboard(
     text: String,
     textField: String,
     label: String,
+    isError: Boolean =  false,
+    //outlineTextColor: Color  = MaterialTheme.colorScheme.secondaryContainer,
     onButtonClicked: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
@@ -71,11 +73,7 @@ fun CustomKeyboard(
             OutlinedTextField(
                 value = textField,
                 label = { Text(text = label) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                ),
+                isError = isError,
                 readOnly = true,
                 onValueChange = {},
                 modifier = Modifier

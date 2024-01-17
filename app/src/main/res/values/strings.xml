@@ -3,6 +3,8 @@
     <string name="service_balance">Saldo</string>
     <string name="service_extract">Extrato</string>
     <string name="service_investment">Investimentos</string>
+    <string name="service_international">Internacional</string>
+    <string name="service_payment">Pagar</string>
     <string name="service_social">Social</string>
     <string name="service_pix">PIX</string>
     <string name="insert_pix_key">Transferência PIX:</string>
@@ -24,6 +26,7 @@
     <string name="pix_schedule">Agendar</string>
     <string name="pix_copy_paste">Pix Copia e Cola</string>
     <string name="pix_qr_code">Ler QR Code</string>
+    <string name="pix_credit_card">Cartão</string>
 
     <string name="pix_charge">Cobrar</string>
     <string name="pix_deposit">Depositar</string>

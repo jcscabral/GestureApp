@@ -3,7 +3,6 @@ package com.example.gestureapp.ui
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -157,7 +156,6 @@ fun AppScreen(
                 OptionUseScreen(
                     useOption = userUiState.useOption,
                     onOptionClicked = {
-                        Log.i("onOptionClicked ", it)
                         entryViewModel.setUseOption(it)
                     },
                     onButtonClicked = {
@@ -228,10 +226,10 @@ fun AppScreen(
                 keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_MONEY)
 
                 PixMoneyScreen(
-                    madeAttempt = pixUiState.madeAttempt,
+                    textField = keyboardUiState.value.textValue,
+                    madeAttempt = keyboardUiState.value.madeAttempt,
                     isMoneyWrong = pixUiState.isMoneyWrong,
                     balance = balanceUiSate.value,
-                    textField = keyboardUiState.value.textValue,
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
                         val deduct = keyboardViewModel.getTextAsDouble()
@@ -258,7 +256,7 @@ fun AppScreen(
                 keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_CPF)
 
                 PixCpfScreen(
-                    madeAttempt = pixUiState.madeAttempt,
+                    madeAttempt = keyboardUiState.value.madeAttempt,
                     isCpfWrong = pixUiState.isCpfWrong,
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
@@ -269,7 +267,7 @@ fun AppScreen(
                     },
                     onKeyboardClicked = {
                         if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
-                            pixViewModel.madeAttempt(true)
+                            keyboardViewModel.madeAttempt()
                             if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue)) {
                                 keyboardViewModel.setPasswordType()
                                 navController.navigate(AppScreenEnum.Auth.name)

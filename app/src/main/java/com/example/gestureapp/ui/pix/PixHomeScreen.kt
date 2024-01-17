@@ -15,11 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.helpers.AppGestureEvents
 import com.example.gestureapp.helpers.AppSensorManager
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.ui.components.ProductItem
@@ -27,42 +30,59 @@ import com.example.gestureapp.ui.components.ProductItem
 
 @Composable
 fun PixHomeScreen(
-    pixSendServices: List<BankProductItem> = DataSource.pixSendServices,
-    pixReceiveServices: List<BankProductItem> = DataSource.pixReceiveServices,
     appSensorManager: AppSensorManager = AppSensorProvider.get(
-        UserActionEnum.BUTTON_TRANSFER_PIX),
+        UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE),
     onSendPixButtonClick: ()-> Unit,
     modifier: Modifier =  Modifier
 ) {
+    val pixSendServices: List<BankProductItem> = DataSource.pixSendServices
+    val pixReceiveServices: List<BankProductItem> = DataSource.pixReceiveServices
+
     Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+//        modifier = Modifier
+//            .verticalScroll(rememberScrollState())
+//            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Área PIX",
             style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(16.dp)
         )
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
+                //.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Enviar")
+            Text(text = "Enviar",
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleMedium)
             LazyRow(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .pointerInput(null) {
+
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                AppGestureEvents.onPointerEvent(
+                                    UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
+                                    event,
+                                    appSensorManager)
+                            }
+                        }
+                    }
+                    //.padding(8.dp)
             ){
                 items(pixSendServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
-                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME,
+                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_SEND,
                             onButtonClick =
                                 if(it.nameId == R.string.pix_transfer){
                                     onSendPixButtonClick
@@ -75,7 +95,9 @@ fun PixHomeScreen(
                 }
             }
             Spacer(modifier = modifier.height(4.dp))
-            Text("Receber")
+            Text(text = "Receber",
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleMedium)
             LazyRow(
                 modifier = Modifier
                     .padding(8.dp)
@@ -85,7 +107,7 @@ fun PixHomeScreen(
                         ProductItem(
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
-                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME,
+                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
                             onButtonClick = {}, //TODO
                             modifier = modifier
                         )

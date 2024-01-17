@@ -55,7 +55,7 @@ abstract class AppGestureEvents {
             }
         }
         /*
-        With sensors. Jut when it is scrolling
+        With sensors. Jut when it is swiping
          */
         fun onPointerEvent(
             userActionEnum: UserActionEnum,
@@ -64,7 +64,6 @@ abstract class AppGestureEvents {
         ){
 
             val eventType  = event.type
-
             for (change in event.changes) {
 
                 if (!appSensorManager.activated) {

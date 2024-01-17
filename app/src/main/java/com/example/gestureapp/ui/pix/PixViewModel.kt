@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui.pix
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.gestureapp.data.AppState
@@ -58,13 +59,6 @@ class PixViewModel(
         }
     }
 
-    fun madeAttempt(made: Boolean = true){
-        _uiState.update {state->
-            state.copy(
-                madeAttempt = made
-            )
-        }
-    }
     private fun cleanText(attempt: String): String{
         return attempt
             .replace(".","")
@@ -80,6 +74,7 @@ class PixViewModel(
 
     fun isMoneyMatched(attempt: Double): Boolean{
         setCurrentMoney()
+        Log.i("FIRED", "isMoneyMatched:attempt:$attempt | value${_uiState.value.currentMoney}")
         val isEqual = attempt == _uiState.value.currentMoney
         setIsMoneyWrong(!isEqual)
         return isEqual
@@ -90,7 +85,6 @@ class PixViewModel(
 data class UiState(
     val currentCpf: String = "",
     val currentMoney: Double = 0.00,
-    val madeAttempt: Boolean = false,
     val isCpfWrong: Boolean = false,
     val isMoneyWrong: Boolean = false
 )

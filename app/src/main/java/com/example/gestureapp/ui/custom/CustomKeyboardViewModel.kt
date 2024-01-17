@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui.custom
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

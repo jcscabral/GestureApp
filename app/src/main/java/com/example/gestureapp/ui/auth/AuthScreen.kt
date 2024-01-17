@@ -1,11 +1,14 @@
 package com.example.gestureapp.ui.auth
 
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.ui.custom.CustomKeyboard
+import com.example.gestureapp.ui.theme.md_theme_dark_onError
 
 
 @Composable
@@ -20,19 +23,13 @@ fun AuthScreen(
     modifier: Modifier= Modifier
 )
 {
-    val context = LocalContext.current
-
-    CustomKeyboard(
+   CustomKeyboard(
         userActionEnum = userActionEnum,
         text = text,
         textField = textField,
         label = if (madeAttempt && isPasswordWrong) "Senha errada" else "Senha",
+        isError = madeAttempt && isPasswordWrong,
         onButtonClicked = onButtonClicked,
-        onItemClick = onKeyboardClicked,
+        onItemClick = onKeyboardClicked
     )
-    if (madeAttempt && isPasswordWrong){
-        Toast.makeText(
-            context, "Senha incorreta",
-            Toast.LENGTH_SHORT).show()
-    }
 }

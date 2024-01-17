@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Face
+import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material.icons.rounded.ShoppingCart
 import com.example.gestureapp.R
 import com.example.gestureapp.model.BankProductItem
@@ -29,6 +30,8 @@ abstract class DataSource {
                 BankProductItem(R.string.service_extract, Icons.Rounded.Face),
                 BankProductItem(R.string.service_social, Icons.Rounded.Build),
                 BankProductItem(R.string.service_investment, Icons.Rounded.Call),
+                BankProductItem(R.string.service_international, Icons.Rounded.MailOutline),
+                BankProductItem(R.string.service_payment, Icons.Rounded.DateRange),
                 BankProductItem(R.string.service_pix, Icons.Rounded.DateRange)
             )
 
@@ -38,6 +41,8 @@ abstract class DataSource {
                 BankProductItem(R.string.pix_copy_paste, Icons.Rounded.Build),
                 BankProductItem(R.string.pix_qr_code, Icons.Rounded.Call),
                 BankProductItem(R.string.pix_transfer, Icons.Rounded.ShoppingCart),
+                BankProductItem(R.string.pix_charge, Icons.Rounded.MailOutline),
+                BankProductItem(R.string.pix_credit_card, Icons.Rounded.ShoppingCart),
             )
 
         val pixReceiveServices: List<BankProductItem> =
