@@ -36,16 +36,18 @@ class CustomKeyboardViewModel(
     private val _uiState = MutableStateFlow(KeyboardUiState())
     val uiState: StateFlow<KeyboardUiState> = _uiState.asStateFlow()
 
-    private val loginSensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_LOGIN)
-    private val moneySensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_MONEY)
-    private val cpfSensorState: AppSensorManager =  AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_CPF)
+    private val loginSensorState: AppSensorManager = AppSensorProvider.get(UserActionEnum.KEYBOARD_LOGIN)
+    private val moneySensorState: AppSensorManager = AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_MONEY)
+    private val cpfSensorState: AppSensorManager = AppSensorProvider.get(UserActionEnum.KEYBOARD_PIX_CPF)
+    private val authSensorState: AppSensorManager = AppSensorProvider.get(UserActionEnum.KEYBOARD_AUTH)
 
-    fun activeSensor(){
+    fun activeSensor(userActionEnum: UserActionEnum){
         viewModelScope.launch {
-            when(_uiState.value.keyboardType) {
-                KeyboardTypeEnum.MONEY -> loginSensorState.active()
-                KeyboardTypeEnum.CPF -> moneySensorState.active()
-                else -> cpfSensorState.active()
+            when(userActionEnum) {
+                UserActionEnum.KEYBOARD_LOGIN -> loginSensorState.active()
+                UserActionEnum.KEYBOARD_PIX_MONEY -> moneySensorState.active()
+                UserActionEnum.KEYBOARD_PIX_CPF -> cpfSensorState.active()
+                else -> authSensorState.active()
             }
         }
     }

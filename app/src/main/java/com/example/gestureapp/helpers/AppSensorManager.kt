@@ -14,7 +14,6 @@ class AppSensorManager{
     private var appSensorListener : AppSensorListener
     var activated = false
 
-
     constructor(sensorManager: SensorManager, actionTypeEnum: UserActionEnum){
         this.actionTypeEnum = actionTypeEnum
         this.appSensorListener = AppSensorListener(actionTypeEnum)
@@ -32,7 +31,7 @@ class AppSensorManager{
         sensorManager.registerListener(
             appSensorListener,
             magneticSensor,
-            SensorManager.SENSOR_DELAY_NORMAL)
+            SensorManager.SENSOR_DELAY_NORMAL) // 20000 ms 5Hz
         sensorManager.registerListener(
             appSensorListener,
             gyroscopeSensor,
@@ -56,8 +55,5 @@ class AppSensorManager{
         }
         this.activated = activated
     }
-
-
-
 
 }

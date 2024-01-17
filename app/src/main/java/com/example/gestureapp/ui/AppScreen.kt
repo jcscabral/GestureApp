@@ -2,6 +2,10 @@ package com.example.gestureapp.ui
 
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,9 +24,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
@@ -46,7 +54,6 @@ import com.example.gestureapp.ui.pix.PixMoneyScreen
 import com.example.gestureapp.ui.pix.PixCpfScreen
 import com.example.gestureapp.ui.pix.PixViewModel
 
-
 enum class AppScreenEnum(@StringRes val title: Int){
     Control(title = R.string.app_controle),
     SignIn(title = R.string.app_signin),
@@ -56,8 +63,7 @@ enum class AppScreenEnum(@StringRes val title: Int){
     PixHome(R.string.app_pix_home),
     PixMoney(R.string.app_pix_money),
     PixReceiver(R.string.app_pix_receiver),
-    Auth(R.string.app_autenticacao),
-    Other(R.string.app_fora)
+    Auth(R.string.app_autenticacao)
 }
 
 @Composable
@@ -80,7 +86,11 @@ fun AppScreen(
         topBar = {
             AppBar(
                 currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
+                canNavigateBack = (navController.previousBackStackEntry != null &&
+                        currentScreen != AppScreenEnum.LogIn &&
+                        currentScreen != AppScreenEnum.Option &&
+                        currentScreen != AppScreenEnum.Home)
+                ,
                 showDialog =  showDialog,
                 navigateUp = {
                     when(currentScreen){
@@ -145,7 +155,6 @@ fun AppScreen(
 
                 keyboardViewModel.disableAllSensors()
                 OptionUseScreen(
-                    userName = userUiState.userName,
                     useOption = userUiState.useOption,
                     onOptionClicked = {
                         Log.i("onOptionClicked ", it)
@@ -161,7 +170,7 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.LogIn.name) {
 
-                keyboardViewModel.activeSensor()
+                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
                 entryViewModel.setId(allUsers)
                 AuthScreen(
                     userActionEnum = UserActionEnum.KEYBOARD_LOGIN,
@@ -216,7 +225,7 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.PixMoney.name) {
 
-                keyboardViewModel.activeSensor()
+                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_MONEY)
 
                 PixMoneyScreen(
                     madeAttempt = pixUiState.madeAttempt,
@@ -246,7 +255,7 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
 
-                keyboardViewModel.activeSensor()
+                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_CPF)
 
                 PixCpfScreen(
                     madeAttempt = pixUiState.madeAttempt,
@@ -272,7 +281,7 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.Auth.name) {
 
-                keyboardViewModel.activeSensor()
+                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
 
                 AuthScreen(
                     userActionEnum = UserActionEnum.KEYBOARD_AUTH,
@@ -327,21 +336,49 @@ fun AppBar(
     showDialog: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
+
     TopAppBar(
         title = {
-            Text(stringResource(currentScreen.title),
-                color = colorScheme.background)
+
+            if (currentScreen == AppScreenEnum.LogIn) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            R.drawable.meu_banco
+                        ),
+                        contentDescription = "Seu Banco",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            }
+            else{
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(currentScreen.title),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = colorScheme.background
+                    )
+                }
+            }
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = colorScheme.primary //MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack &&
-                currentScreen != AppScreenEnum.Home) {
+            if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        //imageVector = Icons.Filled.ArrowBack,
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         tint = Color.White,
                         contentDescription = "Voltar"
@@ -361,4 +398,10 @@ fun AppBar(
         }
     )
 
+}
+
+@Composable
+@Preview
+fun Preview(){
+    AppScreen()
 }

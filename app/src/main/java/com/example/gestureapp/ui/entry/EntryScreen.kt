@@ -67,7 +67,7 @@ fun SignIn(
     ) {
         Text(
             text = "Informar idade e sexo...",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge
         )
         Column(
             modifier = Modifier
@@ -78,7 +78,7 @@ fun SignIn(
         ) {
             OutlinedTextField(
                 value = userName,
-                onValueChange = { },
+                onValueChange = {},
                 label = {Text(text = stringResource(R.string.label_usuario))},
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -117,7 +117,7 @@ fun SignIn(
                     .focusRequester(focusRequester)
                     .onGloballyPositioned {
                         if (!textFieldLoaded) {
-                            focusRequester.requestFocus() // IMPORTANT
+                            focusRequester.requestFocus()
                             textFieldLoaded = true // stop cyclic recompositions
                         }
                     }

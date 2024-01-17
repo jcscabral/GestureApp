@@ -27,9 +27,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,10 +37,8 @@ import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.ui.theme.GestureAppTheme
-import com.example.gestureapp.helpers.AppEvents.Companion.onDigitPointerEvent
-import com.example.gestureapp.helpers.AppEvents.Companion.onPointerEvent
+import com.example.gestureapp.helpers.AppGestureEvents.Companion.onPointerEvent
 import com.example.gestureapp.ui.theme.CyanKeyboard
-
 
 @Composable
 fun CustomKeyboard(
@@ -53,15 +51,22 @@ fun CustomKeyboard(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .align(Alignment.CenterHorizontally)
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = text
+                text = text,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                modifier =  Modifier
+                    .padding(16.dp)
             )
             OutlinedTextField(
                 value = textField,
@@ -78,15 +83,19 @@ fun CustomKeyboard(
                     .padding(all = 16.dp),
                 singleLine = true
             )
-            Spacer(modifier = Modifier.padding(8.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onButtonClicked
+            Column(
+                modifier =  Modifier
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.button_entrar),
-                    fontSize = 16.sp
-                )
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onButtonClicked
+                ) {
+                    Text(
+                        text = stringResource(R.string.button_entrar),
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
         Column {
@@ -114,15 +123,16 @@ fun KeyboardGrid(
     val gridState = rememberLazyGridState()
 
     Surface(
-        color = Color.Black
+        color = Color.Black,
+                modifier = Modifier
+                .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-            ,
+                .padding(top = 8.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-
+            horizontalAlignment = Alignment.CenterHorizontally
             ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
@@ -168,7 +178,7 @@ fun ButtonDigit(
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
-                        onDigitPointerEvent(
+                        onPointerEvent(
                             userActionEnum,
                             event,
                             data

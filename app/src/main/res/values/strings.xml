@@ -32,11 +32,11 @@
     <string name="label_usuario">Usuário</string>
     <string name="label_idade">Idade</string>
     <string name="button_entrar">Entrar</string>
+    <string name="button_escolher">Escolher</string>
 
-    <string name="text_option_train">Inicialmente a opção "Teste" deve ser escolhida para ajudar o participante a
-        se familiarizar com o simulador de aplicativo bancário</string>
-    <string name="text_option_test">Opção deve ser escolihda após o participante
-        usar previamente o simulador de aplicativo bancário </string>
-
+    <string name="text_option_train">Inicialmente você deve escolher a opção Teste para lhe ajudar a
+        se familiarizar com o simulador do aplicativo bancário.</string>
+    <string name="text_option_test">Você deve escolher a opção Avaliação após treinamento em Teste.
+        .Se já usou antes, pode começar!</string>
 
 </resources>

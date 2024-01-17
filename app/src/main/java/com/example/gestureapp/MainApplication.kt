@@ -12,6 +12,7 @@ class MainApplication: Application() {
 
     companion object {
         lateinit var sensorManager: SensorManager
+        lateinit var context: MainApplication
     }
 
     override fun onCreate() {
@@ -19,6 +20,8 @@ class MainApplication: Application() {
         container = AppDataContainer(this)
         sensorManager = getSystemService(
             Context.SENSOR_SERVICE) as SensorManager
+        context = this
     }
 
 }
+

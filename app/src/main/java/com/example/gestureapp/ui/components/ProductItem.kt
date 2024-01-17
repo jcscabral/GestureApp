@@ -18,12 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.helpers.AppEvents
+import com.example.gestureapp.helpers.AppGestureEvents
 import com.example.gestureapp.ui.theme.Purple40
 import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 
@@ -48,9 +48,21 @@ fun ProductItem(
         Column(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .pointerInteropFilter() {
-                    AppEvents.onButtonMotionEvent(userActionEnum, it)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            AppGestureEvents.onPointerEvent(
+                                userActionEnum,
+                                event
+                            )
+                        }
+                    }
                 }
+//                .pointerInteropFilter() {
+//                    AppGestureEvents.onButtonMotionEvent(userActionEnum, it)
+//                }
+
 
         ) {
 

@@ -3,8 +3,6 @@ package com.example.gestureapp.data
 enum class UserActionEnum {
     HORIZONTAL_SWIPE_HOME,
     HORIZONTAL_SWIPE_HOME_BUTTON,
-    HORIZONTAL_SWIPE_PIX_HOME,
-    BUTTON_ENTER_PIX,
     BUTTON_TRANSFER_PIX,
     KEYBOARD_LOGIN,
     KEYBOARD_AUTH,

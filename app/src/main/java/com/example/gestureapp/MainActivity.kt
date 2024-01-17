@@ -1,5 +1,12 @@
 package com.example.gestureapp
+import android.content.ContextWrapper
+import android.content.Intent
+import android.media.audiofx.EnvironmentalReverb
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,36 +14,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontVariation
 import com.example.gestureapp.ui.AppScreen
 import com.example.gestureapp.ui.theme.GestureAppTheme
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
 
 
 class MainActivity : ComponentActivity(){
-
-//    lateinit var swipeSensorManager: AppSensorManager
-//    lateinit var buttonSensorManager: AppSensorManager
-//    lateinit var keyboardSensorManager: AppSensorManager
-
-    //val uuid: UUID =  AppSection.sectionId
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
-//        this.swipeSensorManager = AppSensorManager(
-//            getSystemService(
-//                Context.SENSOR_SERVICE) as SensorManager,
-//            UserActionEnum.HORIZONTAL_SWIPE)
-//
-//        this.buttonSensorManager = AppSensorManager(
-//            getSystemService(
-//                Context.SENSOR_SERVICE) as SensorManager,
-//            UserActionEnum.BUTTON_PRESS)
-//
-//        this.keyboardSensorManager = AppSensorManager(
-//            getSystemService(
-//                Context.SENSOR_SERVICE) as SensorManager,
-//            UserActionEnum.KEYBOARD_TYPING)
 
         setContent {
             GestureAppTheme {
@@ -50,22 +39,6 @@ class MainActivity : ComponentActivity(){
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        this.appSensorManager.active()//TODO
-//    }
-//    override fun onPause() {
-//        super.onPause()
-//        this.swipeSensorManager.active(false)
-//        this.buttonSensorManager.active(false)
-//        this.keyboardSensorManager.active(false)
-//    }
-//    override fun onStop() {
-//        super.onStop()
-//        this.swipeSensorManager.active(false)
-//        this.buttonSensorManager.active(false)
-//        this.keyboardSensorManager.active(false)
-//    }
 }
 //@Preview(showBackground = true)
 @Composable

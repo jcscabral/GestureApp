@@ -27,7 +27,7 @@ import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.helpers.AppSensorManager
-import com.example.gestureapp.helpers.AppEvents
+import com.example.gestureapp.helpers.AppGestureEvents
 import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.components.ConfirmDialog
 import com.example.gestureapp.ui.components.ProductItem
@@ -54,7 +54,7 @@ fun ProductsList(
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent()
-                            AppEvents.onPointerEvent(
+                            AppGestureEvents.onPointerEvent(
                                 UserActionEnum.HORIZONTAL_SWIPE_HOME,
                                 event,
                                 appSensorManager)

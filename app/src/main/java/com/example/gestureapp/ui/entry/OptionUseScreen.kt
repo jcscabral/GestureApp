@@ -26,7 +26,6 @@ import com.example.gestureapp.data.DataSource
 
 @Composable
 fun OptionUseScreen(
-    userName: String,
     useOption: String,
     onOptionClicked: (String)-> Unit,
     onButtonClicked: ()-> Unit
@@ -42,17 +41,17 @@ fun OptionUseScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Olá $userName!",
-            textAlign = TextAlign.Left,
+            text = "Olá participante!",
+            //textAlign = TextAlign.Left,
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
-            text = "Opção de uso:",
-            textAlign = TextAlign.Left,
-            style = MaterialTheme.typography.titleMedium,
+            text = "Escolha uma opção de uso:",
+            //textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.titleLarge,
         )
         Spacer(modifier = Modifier
-            .height(8.dp)
+            .height(16.dp)
         )
         Row(){
 
@@ -78,19 +77,23 @@ fun OptionUseScreen(
             }
 
         }
+        Spacer(modifier = Modifier
+            .height(16.dp)
+        )
         Row(){
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onButtonClicked
             ) {
                 Text(
-                    text = stringResource(R.string.button_entrar),
+                    text = stringResource(R.string.button_escolher),
                     fontSize = 16.sp
                 )
             }
         }
         Spacer(modifier = Modifier
-            .height(8.dp)
+            .height(16.dp)
+            .padding(4.dp)
         )
         Text(
             if (useOption == useOptionList.first()){
