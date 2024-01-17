@@ -2,6 +2,7 @@ package com.example.gestureapp.helpers
 
 import android.util.Log
 import android.view.MotionEvent
+import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import com.example.gestureapp.data.AppState
@@ -55,7 +56,7 @@ abstract class AppGestureEvents {
             }
         }
         /*
-        With sensors. Jut when it is swiping
+        With sensors. Just when it is swiping
          */
         fun onPointerEvent(
             userActionEnum: UserActionEnum,
@@ -64,6 +65,7 @@ abstract class AppGestureEvents {
         ){
 
             val eventType  = event.type
+            //val centroidSize = event.calculateCentroidSize(false)
             for (change in event.changes) {
 
                 if (!appSensorManager.activated) {
@@ -82,9 +84,9 @@ abstract class AppGestureEvents {
                     appSensorManager.active(false)
                 }
 
-//                Log.i(userActionEnum.toString(),
-//                    "id:$id;sessionId:$sessionId;eventType:$eventType;action:$action;" +
-//                            "pressure $pressure;x:$x;y:$y;evenTime:$uptimeMillis")
+                Log.i(userActionEnum.toString(),
+                    "id:$id;sessionId:$sessionId;eventType:$eventType;action:$action;" +
+                            "pressure:$pressure;x:$x;y:$y;evenTime:$uptimeMillis")
 
                 val text = "$id;$sessionId;${userActionEnum.ordinal};${eventNumber(eventType)};" +
                         "$pressure;$x;$y;$uptimeMillis"

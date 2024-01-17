@@ -40,8 +40,8 @@ abstract class DataSource {
                 BankProductItem(R.string.pix_schedule, Icons.Rounded.Face),
                 BankProductItem(R.string.pix_copy_paste, Icons.Rounded.Build),
                 BankProductItem(R.string.pix_qr_code, Icons.Rounded.Call),
-                BankProductItem(R.string.pix_transfer, Icons.Rounded.ShoppingCart),
                 BankProductItem(R.string.pix_charge, Icons.Rounded.MailOutline),
+                BankProductItem(R.string.pix_transfer, Icons.Rounded.ShoppingCart),
                 BankProductItem(R.string.pix_credit_card, Icons.Rounded.ShoppingCart),
             )
 
@@ -70,6 +70,17 @@ abstract class DataSource {
                 "12345678901",
                 "12345678901",
                 "12345678901"
+            )
+
+        val namesList: List<String> =
+            listOf(
+                "Júlio César de Sousa Cabral",
+                "Maria Antônia Firmino",
+                "Paulo Gonçalves de Almeida",
+                "Joâo Antônio Ferreira da Silva",
+                "Helena dos Anjos Mello",
+                "Fábio Madureira Cavalcante",
+                "Ana Carolina Rossi"
             )
 
         val gender =  listOf(

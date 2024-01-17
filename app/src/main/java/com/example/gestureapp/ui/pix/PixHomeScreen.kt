@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui.pix
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.AppSensorProvider
@@ -37,11 +39,9 @@ fun PixHomeScreen(
 ) {
     val pixSendServices: List<BankProductItem> = DataSource.pixSendServices
     val pixReceiveServices: List<BankProductItem> = DataSource.pixReceiveServices
+    val context = LocalContext.current
 
     Column(
-//        modifier = Modifier
-//            .verticalScroll(rememberScrollState())
-//            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -54,7 +54,6 @@ fun PixHomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
-                //.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -75,7 +74,6 @@ fun PixHomeScreen(
                             }
                         }
                     }
-                    //.padding(8.dp)
             ){
                 items(pixSendServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
@@ -83,11 +81,16 @@ fun PixHomeScreen(
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
                             userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_SEND,
-                            onButtonClick =
-                                if(it.nameId == R.string.pix_transfer){
-                                    onSendPixButtonClick
+                            onButtonClick = {
+                                if (it.nameId == R.string.pix_transfer) {
+                                    onSendPixButtonClick()
+                                } else {
+                                    Toast.makeText(
+                                        context, "Opção inválida na pesquisa!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                                else{ {} } //TODO
+                            }
                             ,
                             modifier = modifier
                         )
@@ -108,7 +111,12 @@ fun PixHomeScreen(
                             nameId = it.nameId,
                             imageVector = it.imageIcon ,
                             userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
-                            onButtonClick = {}, //TODO
+                            onButtonClick = {
+                                Toast.makeText(
+                                    context, "Opção inválida na pesquisa!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
                             modifier = modifier
                         )
                     }

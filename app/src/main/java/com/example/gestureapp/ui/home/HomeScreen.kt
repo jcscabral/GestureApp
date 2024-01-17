@@ -1,6 +1,8 @@
 package com.example.gestureapp.ui.home
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,10 +12,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +30,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,32 +49,32 @@ import com.example.gestureapp.ui.components.ConfirmDialog
 import com.example.gestureapp.ui.components.ProductItem
 import com.example.gestureapp.ui.theme.Purple40
 import com.example.gestureapp.ui.theme.md_theme_dark_secondary
+import com.example.gestureapp.ui.theme.md_theme_dark_surfaceVariant
 
 @Composable
 fun ProductsList(
-    appSensorManager: AppSensorManager = AppSensorProvider
-        .get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
-    onAnyButtonClick: () -> Unit = {},
+    appSensorManager: AppSensorManager? = null,// AppSensorProvider
+    //.get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
     onPixButtonClick: () -> Unit,
 
     modifier: Modifier = Modifier
 ){
     val listOfServices: List<BankProductItem> = DataSource.bankServices
+    val context = LocalContext.current
 
     Column {
         LazyRow(
-            modifier = Modifier
+            modifier = Modifier //TODO
                 .pointerInput(null) {
-
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            AppGestureEvents.onPointerEvent(
-                                UserActionEnum.HORIZONTAL_SWIPE_HOME,
-                                event,
-                                appSensorManager)
-                        }
-                    }
+//                    awaitPointerEventScope {
+//                        while (true) {
+//                            val event = awaitPointerEvent()
+//                            AppGestureEvents.onPointerEvent(
+//                                UserActionEnum.HORIZONTAL_SWIPE_HOME,
+//                                event,
+//                                appSensorManager)
+//                        }
+//                    }
                 }
         ){
             items(listOfServices){
@@ -75,11 +83,15 @@ fun ProductsList(
                         nameId = it.nameId,
                         imageVector = it.imageIcon ,
                         userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME_BUTTON,
-                        onButtonClick =
-                        if (it.nameId == R.string.service_pix) {
-                            onPixButtonClick
-                        } else {
-                            onAnyButtonClick
+                        onButtonClick = {
+                            if (it.nameId == R.string.service_pix) {
+                                onPixButtonClick()
+                            } else {
+                                Toast.makeText(
+                                    context, "Opção inválida na pesquisa!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                         ,
                         modifier = modifier
@@ -98,7 +110,8 @@ fun HorizontalProducts(
     Text(
         text="Serviços",
         style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(16.dp)
+        color = Purple40,
+        modifier = Modifier.padding(top = 16.dp)
     )
     ProductsList(
         onPixButtonClick = onButtonClick,
@@ -115,7 +128,6 @@ fun HomeScreen(
     navigateExit: ()-> Unit,
     onButtonClick: ()-> Unit
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,18 +137,22 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .background(color = md_theme_dark_secondary)
             ,
-            ) {
+        ) {
             Text(
-                "$userName! n°${AppState.id}",
+                "Bem-vindo $userName! Conta n°${AppState.id}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp)
             )
             Text(
                 "Ação ${AppState.actionNumber}",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.labelLarge,
                 color = Color.White,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -144,17 +160,48 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-            ) {
-                Text(
-                    "Saldo: ${moneyFormatter(balance)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Purple40,
-                    textAlign = TextAlign.Center
-                )
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 6.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .width(256.dp)
+                    .align(Alignment.CenterHorizontally)
+            ){
+                Column(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ){
+                    Text(
+                        text = "Saldo: ${moneyFormatter(balance)}",
+                        color = md_theme_dark_surfaceVariant,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
             HorizontalProducts(onButtonClick = onButtonClick)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text="Histórico de Investimentos",
+                style = MaterialTheme.typography.titleLarge,
+                color = Purple40,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            ElevatedCard(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 6.dp),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+            ){
+                Image(painter = painterResource(
+                    R.drawable.grafico_investimento
+                ),
+                    contentDescription = "Histórico dos investimentos")
+            }
+
+
             if (showDialog.value) {
                 ConfirmDialog(
                     onDismissRequest = { showDialog.value = false },
@@ -174,7 +221,7 @@ fun HomeScreen(
 @Preview
 @Composable
 fun Preview(
-    id: Int = 0 ,
+    id: Int = 1 ,
     balance: Double = 0.00 ,
 ){  HomeScreen(
     userName = "Balboa",

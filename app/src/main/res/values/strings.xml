@@ -17,6 +17,8 @@
     <string name="app_login">Acessar</string>
     <string name="app_mensagem_entrada">Seu Banco é aqui</string>
     <string name="app_autenticacao">Validação</string>
+    <string name="app_confirmed">Confirmação</string>
+
     <string name="app_pix_home">Pix</string>
     <string name="app_pix_money">Valor do PIX</string>
     <string name="app_pix_receiver">Destinatário</string>

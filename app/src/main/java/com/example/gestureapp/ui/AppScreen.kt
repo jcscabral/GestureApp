@@ -48,6 +48,7 @@ import com.example.gestureapp.ui.entry.EntryViewModel
 import com.example.gestureapp.ui.entry.OptionUseScreen
 import com.example.gestureapp.ui.home.HomeScreen
 import com.example.gestureapp.ui.home.HomeViewModel
+import com.example.gestureapp.ui.pix.PixConfirmed
 import com.example.gestureapp.ui.pix.PixHomeScreen
 import com.example.gestureapp.ui.pix.PixMoneyScreen
 import com.example.gestureapp.ui.pix.PixCpfScreen
@@ -62,7 +63,8 @@ enum class AppScreenEnum(@StringRes val title: Int){
     PixHome(R.string.app_pix_home),
     PixMoney(R.string.app_pix_money),
     PixReceiver(R.string.app_pix_receiver),
-    Auth(R.string.app_autenticacao)
+    Auth(R.string.app_autenticacao),
+    Confirmed(R.string.app_confirmed)
 }
 
 @Composable
@@ -88,7 +90,8 @@ fun AppScreen(
                 canNavigateBack = (navController.previousBackStackEntry != null &&
                         currentScreen != AppScreenEnum.LogIn &&
                         currentScreen != AppScreenEnum.Option &&
-                        currentScreen != AppScreenEnum.Home)
+                        currentScreen != AppScreenEnum.Home &&
+                        currentScreen != AppScreenEnum.Confirmed)
                 ,
                 showDialog =  showDialog,
                 navigateUp = {
@@ -292,12 +295,13 @@ fun AppScreen(
                             keyboardViewModel.clear()
                             homeViewModel.confirmTransaction()
                             entryViewModel.nextAction()
-                            if (userUiState.isFinished){
-                                navController.navigate(AppScreenEnum.Control.name) //TODO new screen
-                            }
-                            else{
-                                navController.navigate(AppScreenEnum.Home.name)
-                            }
+                            navController.navigate(AppScreenEnum.Confirmed.name)
+//                            if (userUiState.isFinished){
+//                                navController.navigate(AppScreenEnum.Control.name) //TODO new screen
+//                            }
+//                            else{
+//                                navController.navigate(AppScreenEnum.Home.name)
+//                            }
                         }
                     },
                     onKeyboardClicked = {
@@ -305,18 +309,31 @@ fun AppScreen(
                             if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
                                 keyboardViewModel.clear()
                                 homeViewModel.confirmTransaction()
-                                entryViewModel.nextAction()
-                                if (userUiState.isFinished){
-                                    navController.navigate(AppScreenEnum.Control.name) //TODO new screen
-                                }
-                                else{
-                                    navController.navigate(AppScreenEnum.Home.name)
-                                }
+                                navController.navigate(AppScreenEnum.Confirmed.name)
+//                                if (userUiState.isFinished){
+//                                    navController.navigate(AppScreenEnum.Control.name) //TODO new screen
+//                                }
+//                                else{
+//                                    navController.navigate(AppScreenEnum.Home.name)
+//                                }
                             }
                         }
                     },
                     textField = keyboardUiState.value.textValue,
                 )
+            }
+            composable(route = AppScreenEnum.Confirmed.name) {
+                PixConfirmed(
+                    actionNumber = userUiState.actionNumber,
+                    onButtonClick = {
+                        if (userUiState.isFinished){
+                            navController.navigate(AppScreenEnum.Control.name) //TODO new screen
+                        }
+                        else{
+                            entryViewModel.nextAction()
+                            navController.navigate(AppScreenEnum.Home.name)
+                        }
+                    })
             }
         }
     }

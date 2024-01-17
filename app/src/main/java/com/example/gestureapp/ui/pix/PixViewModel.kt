@@ -65,6 +65,7 @@ class PixViewModel(
             .replace("-","")
             .trim()
     }
+
     fun isCpfMatched(attempt: String): Boolean{
         setCurrentCpf()
         val isEqual = cleanText(attempt) == _uiState.value.currentCpf
@@ -74,7 +75,6 @@ class PixViewModel(
 
     fun isMoneyMatched(attempt: Double): Boolean{
         setCurrentMoney()
-        Log.i("FIRED", "isMoneyMatched:attempt:$attempt | value${_uiState.value.currentMoney}")
         val isEqual = attempt == _uiState.value.currentMoney
         setIsMoneyWrong(!isEqual)
         return isEqual
