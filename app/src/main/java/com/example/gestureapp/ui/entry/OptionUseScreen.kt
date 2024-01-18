@@ -93,15 +93,18 @@ fun OptionUseScreen(
         }
         Spacer(modifier = Modifier
             .height(16.dp)
-            .padding(4.dp)
+            .padding(start = 6.dp, top = 12.dp, end = 6.dp)
         )
         Text(
+            text =
             if (useOption == useOptionList.first()){
                 stringResource(id = R.string.text_option_train)
             }
             else{
                 stringResource(id = R.string.text_option_test)
-            }
+            },
+            fontSize = 18.sp,
+            modifier = Modifier.padding(4.dp)
         )
     }
 }

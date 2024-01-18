@@ -16,8 +16,8 @@ data class User(
     val actionNumber: Int,
     val isStarted: Boolean = false,
     val isRegistered: Boolean = false,
+    val isTest: Boolean = false,
     val isLogged: Boolean = false,
-    val isTrain: Boolean = true,
     val isFinished: Boolean = false,
     val initDateTime: String? = null,
     val endDateTime: String? = null

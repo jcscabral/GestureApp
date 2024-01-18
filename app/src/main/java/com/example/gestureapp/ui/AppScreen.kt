@@ -1,6 +1,5 @@
 package com.example.gestureapp.ui
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,10 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,7 +41,7 @@ import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.ui.auth.AuthScreen
 import com.example.gestureapp.ui.auth.AuthViewModel
 import com.example.gestureapp.ui.control.ControlScreen
-import com.example.gestureapp.ui.custom.CustomKeyboardViewModel
+import com.example.gestureapp.ui.keyboard.CustomKeyboardViewModel
 import com.example.gestureapp.ui.entry.EntryScreen
 import com.example.gestureapp.ui.entry.EntryViewModel
 import com.example.gestureapp.ui.entry.OptionUseScreen
@@ -107,13 +104,12 @@ fun AppScreen(
             )
         }
     ) { innerPadding ->
-        val allUsers by entryViewModel.allUsers.collectAsState()
 
+        val allUsers by entryViewModel.allUsers.collectAsState()
         val userUiState by entryViewModel.userUiState.collectAsState()
         val keyboardUiState = keyboardViewModel.uiState.collectAsState()
         val authUiState = authViewModel.uiState.collectAsState()
         val balanceUiSate = homeViewModel.balanceUiState.collectAsState()
-
         val pixUiState by pixViewModel.uiState.collectAsState()
 
         NavHost(
@@ -173,8 +169,11 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.LogIn.name) {
 
-                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
-                entryViewModel.setId(allUsers)
+                if(userUiState.isTest){
+                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
+                }
+
+                entryViewModel.setCurrentUserId()
                 AuthScreen(
                     userActionEnum = UserActionEnum.KEYBOARD_LOGIN,
                     text =  "Olá cliente, seja bem-vindo!",
@@ -203,11 +202,17 @@ fun AppScreen(
             composable(route = AppScreenEnum.Home.name) {
 
                 keyboardViewModel.disableAllSensors()
+
+                pixViewModel.setCurrentCpf(userUiState.actionNumber)
+                pixViewModel.setCurrentMoney(userUiState.actionNumber)
                 HomeScreen(
+                    userUiState.actionNumber,
+                    userUiState.isTest,
                     balance = balanceUiSate.value,
                     showDialog = showDialog,
                     navigateExit = {
                         entryViewModel.setTestUseOption()
+                        entryViewModel.setIsLogged(false)
                         navController.navigate(AppScreenEnum.Option.name)
                     },
                     onButtonClick = {
@@ -219,6 +224,7 @@ fun AppScreen(
 
                 keyboardViewModel.disableAllSensors()
                 PixHomeScreen(
+                    isTest = userUiState.isTest,
                     onSendPixButtonClick = {
                         keyboardViewModel.setMoneyType()
                         navController.navigate(AppScreenEnum.PixMoney.name)
@@ -227,7 +233,9 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.PixMoney.name) {
 
-                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_MONEY)
+                if(userUiState.isTest){
+                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_MONEY)
+                }
 
                 PixMoneyScreen(
                     textField = keyboardUiState.value.textValue,
@@ -257,7 +265,9 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
 
-                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_CPF)
+                if(userUiState.isTest) {
+                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_CPF)
+                }
 
                 PixCpfScreen(
                     madeAttempt = keyboardUiState.value.madeAttempt,
@@ -283,7 +293,9 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.Auth.name) {
 
-                keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
+                if(userUiState.isTest) {
+                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
+                }
 
                 AuthScreen(
                     userActionEnum = UserActionEnum.KEYBOARD_AUTH,
@@ -295,7 +307,6 @@ fun AppScreen(
                         if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
                             keyboardViewModel.clear()
                             homeViewModel.confirmTransaction()
-                            entryViewModel.nextAction()
                             navController.navigate(AppScreenEnum.Confirmed.name)
                         }
                     },
@@ -312,24 +323,24 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.Confirmed.name) {
+
                 PixConfirmed(
                     actionNumber = userUiState.actionNumber,
                     onButtonClick = {
-                        entryViewModel.nextAction()
-                        if (userUiState.isFinished){
-                            navController.navigate(AppScreenEnum.Control.name) //TODO new screen
-                        }
-                        else{
+                        if (entryViewModel.nextAction()){
                             navController.navigate(AppScreenEnum.Home.name)
                         }
-                    })
+                        else{
+                            if(userUiState.isTest){
+                                navController.navigate(AppScreenEnum.Control.name)
+                            }
+                        }
+                    }
+                )
             }
         }
     }
 }
-
-
-
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

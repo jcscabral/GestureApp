@@ -1,4 +1,4 @@
-package com.example.gestureapp.ui.custom
+package com.example.gestureapp.ui.keyboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui.entry
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 
 import androidx.lifecycle.ViewModel
@@ -18,13 +19,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 
-const val MIN_AGE = 18
-const val MAX_AGE = 120
-
 class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() {
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
+        private const val MIN_AGE = 18
+        private const val MAX_AGE = 120
     }
 
     private val numberOfActions =  DataSource.cpfList.size
@@ -48,6 +48,15 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 isLogged = isLogged
             )
         }
+    }
+
+    fun setIsTest(isTest: Boolean = true){
+        _userUiState.update {state->
+            state.copy(
+                isTest = isTest
+            )
+        }
+        updateUser()
     }
 
     fun setAge(age: String){
@@ -74,14 +83,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 useOption = useOption
             )
         }
-    }
-
-    private fun setEndTime(){
-        _userUiState.update {state->
-            state.copy(
-                endDateTime = now()
-            )
-        }
+        setIsTest(DataSource.useOption.last() == _userUiState.value.useOption)
     }
 
     fun setTestUseOption(){
@@ -92,19 +94,32 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         }
     }
 
-    fun nextAction(){
-        if (_userUiState.value.actionNumber > numberOfActions){
-            setIsFinished()
+    private fun setEndTime(){
+        _userUiState.update {state->
+            state.copy(
+                endDateTime = now()
+            )
+        }
+    }
+
+    fun nextAction(): Boolean{
+        Log.i("NEXT_ACTION", "Início actionNumber:${_userUiState.value.actionNumber}")
+        if (_userUiState.value.actionNumber == numberOfActions){
             setEndTime()
+            setIsFinished()
+            return false
         }
         else{
-            AppState.actionNumber =  _userUiState.value.actionNumber
             _userUiState.update { state->
                 state.copy(
                     actionNumber = _userUiState.value.actionNumber + 1
                 )
             }
+            AppState.actionNumber =  _userUiState.value.actionNumber
+            Log.i("NEXT_ACTION", "Fim actionNumber:${_userUiState.value.actionNumber}")
+            return true
         }
+
     }
 
     fun setIsFinished(){
@@ -113,6 +128,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 isFinished = true
             )
         }
+        updateUser()
     }
 
     fun setIsRegistered(){
@@ -121,10 +137,11 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 isRegistered = true
             )
         }
+        updateUser()
     }
 
-    fun setId(allUsers: AllUsers){
-        val id = if(allUsers.users.isNotEmpty()) allUsers.users.first().id else 1
+    fun setCurrentUserId(){
+        val id = if(allUsers.value.users.isNotEmpty()) allUsers.value.users.first().id else 1
         _userUiState.update {state->
             state.copy(
                 id = id
@@ -157,6 +174,10 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     private fun insertUser() = runBlocking{
         usersRepository.insertUser((_userUiState.value).toUser())
     }
+
+    private fun updateUser() = runBlocking{
+        usersRepository.updateUser((_userUiState.value).toUser())
+    }
 }
 
 data class UserUiState(
@@ -167,6 +188,7 @@ data class UserUiState(
     val actionNumber: Int = 1,
     val useOption: String = DataSource.useOption.first(),
     val isRegistered: Boolean = false,
+    val isTest: Boolean =  false,
     val isLogged: Boolean = false,
     val isStarted: Boolean = false,
     val isFinished: Boolean = false,
@@ -177,10 +199,10 @@ data class UserUiState(
 fun UserUiState.toUser(): User = User(
     id = id,
     age = age.toInt(),
-    gender = gender.substring(0,1) ,
+    gender = gender.substring(0,1),
     actionNumber = actionNumber,
     isRegistered = isRegistered,
-    isTrain =  useOption == DataSource.useOption.first(),
+    isTest =  isTest,
     isLogged = isLogged,
     isStarted = isStarted,
     isFinished = isFinished,

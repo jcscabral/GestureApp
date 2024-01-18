@@ -16,8 +16,9 @@ import kotlinx.coroutines.runBlocking
 class AppSensorListener: SensorEventListener {
 
     private val scope = CoroutineScope(Dispatchers.Default)
-    private val events = Channel<SensorEvent>(100)
+//    private val events = Channel<SensorEvent>(100)
     private val actionTypeEnum : UserActionEnum
+    private var actionNumber: Int = 0
 
     constructor(actionTypeEnum: UserActionEnum){
         this.actionTypeEnum = actionTypeEnum
@@ -29,14 +30,14 @@ class AppSensorListener: SensorEventListener {
     }
     private fun recordCsv(sensorType: Int, event: SensorEvent){
 
-//        val eventName = when (sensorType){
-//            2 -> "MAGNETIC"
-//            1 -> "ACCELEROMETER"
-//            4 -> "GYROSCOPE"
-//            else -> "OTHER SENSOR"
-//        }
-//        Log.i(eventName, "action:${actionTypeEnum};id:${AppState.id};session:${AppState.actionNumber};" +
-//                "X:${event.values[0]};Y:${event.values[1]};Z:${event.values[2]};Ts:${event.timestamp}")
+        val eventName = when (sensorType){
+            2 -> "MAGNETIC"
+            1 -> "ACCELEROMETER"
+            4 -> "GYROSCOPE"
+            else -> "OTHER SENSOR"
+        }
+        Log.i(eventName, "action:${actionTypeEnum};id:${AppState.id};session:${AppState.actionNumber};" +
+                "X:${event.values[0]};Y:${event.values[1]};Z:${event.values[2]};Ts:${event.timestamp}")
 
         scope.launch {
             Recorder.sensorsData(
@@ -56,7 +57,7 @@ class AppSensorListener: SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        Log.i("CHANGED", "id:${AppState.id};section:${AppState.actionNumber}")
+        Log.i("ACCURACY_CHANGED", "id:${AppState.id};section:${AppState.actionNumber}")
     }
 
 //    fun offer(event: SensorEvent) = runBlocking{events.send(event)}

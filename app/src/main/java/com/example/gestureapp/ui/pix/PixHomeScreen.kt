@@ -30,10 +30,12 @@ import com.example.gestureapp.helpers.AppGestureEvents
 import com.example.gestureapp.helpers.AppSensorManager
 import com.example.gestureapp.model.BankProductItem
 import com.example.gestureapp.ui.components.ProductItem
+import com.example.gestureapp.ui.theme.Purple40
 
 
 @Composable
 fun PixHomeScreen(
+    isTest: Boolean,
     appSensorManager: AppSensorManager = AppSensorProvider.get(
         UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE),
     onSendPixButtonClick: ()-> Unit,
@@ -60,8 +62,11 @@ fun PixHomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Enviar",
-                textAlign = TextAlign.Left,
-                style = MaterialTheme.typography.titleMedium)
+                //textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleLarge,
+                color = Purple40,
+                modifier = Modifier.padding(top = 16.dp)
+            )
             LazyRow(
                 modifier = Modifier
                     .pointerInput(null) {
@@ -69,10 +74,12 @@ fun PixHomeScreen(
                         awaitPointerEventScope {
                             while (true) {
                                 val event = awaitPointerEvent()
-                                AppGestureEvents.onPointerEvent(
-                                    UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
-                                    event,
-                                    appSensorManager)
+                                if(isTest){
+                                    AppGestureEvents.onPointerEvent(
+                                        UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
+                                        event,
+                                        appSensorManager)
+                                }
                             }
                         }
                     }
@@ -101,8 +108,11 @@ fun PixHomeScreen(
             }
             Spacer(modifier = modifier.height(4.dp))
             Text(text = "Receber",
-                textAlign = TextAlign.Left,
-                style = MaterialTheme.typography.titleMedium)
+                //textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleLarge,
+                color = Purple40,
+                modifier = Modifier.padding(top = 16.dp)
+                )
             LazyRow(
                 modifier = Modifier
                     .padding(8.dp)

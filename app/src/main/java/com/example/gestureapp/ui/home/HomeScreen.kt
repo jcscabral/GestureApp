@@ -63,6 +63,7 @@ import com.example.gestureapp.ui.theme.md_theme_light_secondary
 
 @Composable
 fun ProductsList(
+    isTest: Boolean,
     appSensorManager: AppSensorManager = AppSensorProvider
         .get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
     onPixButtonClick: () -> Unit,
@@ -77,12 +78,15 @@ fun ProductsList(
             modifier = Modifier
                 .pointerInput(null) {
                     awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            AppGestureEvents.onPointerEvent(
-                                UserActionEnum.HORIZONTAL_SWIPE_HOME,
-                                event,
-                                appSensorManager)
+                        if(isTest) {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                AppGestureEvents.onPointerEvent(
+                                    UserActionEnum.HORIZONTAL_SWIPE_HOME,
+                                    event,
+                                    appSensorManager
+                                )
+                            }
                         }
                     }
                 }
@@ -114,6 +118,7 @@ fun ProductsList(
 
 @Composable
 fun HorizontalProducts(
+    isTest: Boolean,
     onButtonClick: ()-> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -124,6 +129,7 @@ fun HorizontalProducts(
         modifier = Modifier.padding(top = 16.dp)
     )
     ProductsList(
+        isTest = isTest,
         onPixButtonClick = onButtonClick,
         modifier = Modifier
             .padding(16.dp)
@@ -132,6 +138,8 @@ fun HorizontalProducts(
 
 @Composable
 fun HomeScreen(
+    actionNumber: Int,
+    isTest: Boolean,
     balance: Double,
     showDialog: MutableState<Boolean>,
     navigateExit: ()-> Unit,
@@ -144,7 +152,7 @@ fun HomeScreen(
         Box(
             Modifier
                 .fillMaxWidth()
-                .background(color = md_theme_dark_inversePrimary) //md_theme_dark_secondary
+                .background(color = md_theme_dark_inversePrimary)
             ,
         ) {
             Text(
@@ -167,7 +175,7 @@ fun HomeScreen(
             )
 
             Text(
-                "Ação ${AppState.actionNumber}",
+                "Ação $actionNumber",
                 style = MaterialTheme.typography.labelLarge,
                 color = md_theme_dark_onSurfaceVariant,
                 modifier = Modifier
@@ -199,7 +207,9 @@ fun HomeScreen(
                     )
                 }
             }
-            HorizontalProducts(onButtonClick = onButtonClick)
+            HorizontalProducts(
+                isTest = isTest,
+                onButtonClick = onButtonClick)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text="Histórico de Investimentos",
@@ -241,9 +251,11 @@ fun HomeScreen(
 @Preview
 @Composable
 fun Preview(
-    id: Int = 1 ,
+    actinNumber: Int = 1 ,
     balance: Double = 0.00 ,
 ){  HomeScreen(
+    actionNumber = actinNumber,
+    isTest = false,
     balance = balance ,
     showDialog = remember { mutableStateOf(false) },
     navigateExit = {},

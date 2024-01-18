@@ -2,9 +2,8 @@ package com.example.gestureapp.ui.pix
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.media3.common.util.Log
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.ui.custom.CustomKeyboard
+import com.example.gestureapp.ui.keyboard.CustomKeyboard
 
 @Composable
 fun PixMoneyScreen(

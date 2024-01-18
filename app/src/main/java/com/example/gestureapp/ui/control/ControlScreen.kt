@@ -43,12 +43,17 @@ fun ItemsLazyColumn(
                         modifier =  Modifier.padding(start = 4.dp))
                     Text("Age: ${it.age}" ,
                         modifier =  Modifier.padding(start = 4.dp))
-                    Text("Section: ${it.actionNumber}",
+                    Text("Actions: ${it.actionNumber}",
                         modifier =  Modifier.padding(start = 4.dp))
                     Text("Registered: ${it.isRegistered}",
                         modifier =  Modifier.padding(start = 4.dp))
-                    Text("Finished: ${it.isFinished}",
+                    Text("Test: ${it.isTest}",
                         modifier =  Modifier.padding(start = 4.dp))
+                    Text("initDateTime: ${it.initDateTime}",
+                        modifier =  Modifier.padding(start = 4.dp))
+                    Text("endDateTime: ${it.endDateTime}",
+                        modifier =  Modifier.padding(start = 4.dp))
+
                 }
             }
         }

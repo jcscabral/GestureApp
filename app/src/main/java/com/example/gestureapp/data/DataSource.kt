@@ -8,6 +8,7 @@ const val PASSWORD = "54837190"
 const val MAX_PASSWORD_SIZE  = PASSWORD.length
 const val KEY_OK = "OK"
 const val KEY_BACKSPACE = "\u232b"
+const val ACCOUNT_BALANCE =  10000.00
 const val TEN = "10"
 val FACTOR_TEN = BigInteger(TEN)
 
@@ -51,15 +52,16 @@ abstract class DataSource {
 //                170.80,
 //                478.00
             )
+        // https://www.4devs.com.br/gerador_de_cpf
         val cpfList: List<String> =
             listOf(
                 "01009537431",
-                "09199934434", //TODO
+                "34326872063",
+//                "09199934434",
 //                "06851150387",
+//                "79627216003",
 //                "00846557479",
-//                "12345678901",
-//                "12345678901",
-//                "12345678901"
+//                "58693617028"
             )
 
         val namesList: List<String> =
@@ -78,8 +80,8 @@ abstract class DataSource {
             "Feminino"
         )
         val useOption =  listOf(
-            "Teste",
-            "Avaliação"
+            "Treino",
+            "Teste"
         )
 
         val keyboardDigits = listOf(

@@ -1,14 +1,9 @@
 package com.example.gestureapp.ui.auth
 
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import com.example.gestureapp.data.UserActionEnum
-import com.example.gestureapp.ui.custom.CustomKeyboard
-import com.example.gestureapp.ui.theme.md_theme_dark_onError
+import com.example.gestureapp.ui.keyboard.CustomKeyboard
 
 
 @Composable
