@@ -74,7 +74,7 @@ fun ProductsList(
 
     Column {
         LazyRow(
-            modifier = Modifier //TODO
+            modifier = Modifier
                 .pointerInput(null) {
                     awaitPointerEventScope {
                         while (true) {
@@ -132,7 +132,6 @@ fun HorizontalProducts(
 
 @Composable
 fun HomeScreen(
-    userName: String,
     balance: Double,
     showDialog: MutableState<Boolean>,
     navigateExit: ()-> Unit,
@@ -245,7 +244,6 @@ fun Preview(
     id: Int = 1 ,
     balance: Double = 0.00 ,
 ){  HomeScreen(
-    userName = "Balboa",
     balance = balance ,
     showDialog = remember { mutableStateOf(false) },
     navigateExit = {},

@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import com.example.gestureapp.R
 import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.helpers.AppGestureEvents
 import com.example.gestureapp.ui.theme.GestureAppTheme
-import com.example.gestureapp.helpers.AppGestureEvents.Companion.onPointerEvent
 import com.example.gestureapp.ui.theme.CyanKeyboard
 
 @Composable
@@ -157,7 +156,6 @@ fun KeyboardGrid(
     }
 }
 
-//@OptIn(ExperimentalCompos   eUiApi::class)
 @Composable
 fun ButtonDigit(
     userActionEnum: UserActionEnum,
@@ -176,7 +174,7 @@ fun ButtonDigit(
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
-                        onPointerEvent(
+                        AppGestureEvents.onPointerEvent(
                             userActionEnum,
                             event,
                             data

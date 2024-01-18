@@ -1,27 +1,13 @@
 package com.example.gestureapp.data
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.Face
-import androidx.compose.material.icons.rounded.MailOutline
-import androidx.compose.material.icons.rounded.ShoppingCart
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-
-
+import java.math.BigInteger
 import com.example.gestureapp.R
 import com.example.gestureapp.model.BankProductItem
-import java.math.BigInteger
 
 const val CPF_SIZE = 11
 const val PASSWORD = "54837190"
 const val MAX_PASSWORD_SIZE  = PASSWORD.length
-
 const val KEY_OK = "OK"
 const val KEY_BACKSPACE = "\u232b"
-
 const val TEN = "10"
 val FACTOR_TEN = BigInteger(TEN)
 
@@ -59,32 +45,32 @@ abstract class DataSource {
             listOf(
                 820.00,
                 1590.00,
-                3499.99,
-                120.00,
-                1330.50,
-                170.80,
-                478.00
+//                3499.99,
+//                120.00,
+//                1330.50,
+//                170.80,
+//                478.00
             )
         val cpfList: List<String> =
             listOf(
                 "01009537431",
-                "12345678901", //TODO
-                "12345678901",
-                "12345678901",
-                "12345678901",
-                "12345678901",
-                "12345678901"
+                "09199934434", //TODO
+//                "06851150387",
+//                "00846557479",
+//                "12345678901",
+//                "12345678901",
+//                "12345678901"
             )
 
         val namesList: List<String> =
             listOf(
                 "Júlio César de Sousa Cabral",
                 "Maria Antônia Firmino",
-                "Paulo Gonçalves de Almeida",
-                "Joâo Antônio Ferreira da Silva",
-                "Helena dos Anjos Mello",
-                "Fábio Madureira Cavalcante",
-                "Ana Carolina Rossi"
+//                "Paulo Gonçalves de Almeida",
+//                "Joâo Antônio Ferreira da Silva",
+//                "Helena dos Anjos Mello",
+//                "Fábio Madureira Cavalcante",
+//                "Ana Carolina Rossi"
             )
 
         val gender =  listOf(

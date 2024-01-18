@@ -204,7 +204,6 @@ fun AppScreen(
 
                 keyboardViewModel.disableAllSensors()
                 HomeScreen(
-                    userName = userUiState.userName,
                     balance = balanceUiSate.value,
                     showDialog = showDialog,
                     navigateExit = {
@@ -298,12 +297,6 @@ fun AppScreen(
                             homeViewModel.confirmTransaction()
                             entryViewModel.nextAction()
                             navController.navigate(AppScreenEnum.Confirmed.name)
-//                            if (userUiState.isFinished){
-//                                navController.navigate(AppScreenEnum.Control.name) //TODO new screen
-//                            }
-//                            else{
-//                                navController.navigate(AppScreenEnum.Home.name)
-//                            }
                         }
                     },
                     onKeyboardClicked = {
@@ -312,12 +305,6 @@ fun AppScreen(
                                 keyboardViewModel.clear()
                                 homeViewModel.confirmTransaction()
                                 navController.navigate(AppScreenEnum.Confirmed.name)
-//                                if (userUiState.isFinished){
-//                                    navController.navigate(AppScreenEnum.Control.name) //TODO new screen
-//                                }
-//                                else{
-//                                    navController.navigate(AppScreenEnum.Home.name)
-//                                }
                             }
                         }
                     },
@@ -328,11 +315,11 @@ fun AppScreen(
                 PixConfirmed(
                     actionNumber = userUiState.actionNumber,
                     onButtonClick = {
+                        entryViewModel.nextAction()
                         if (userUiState.isFinished){
                             navController.navigate(AppScreenEnum.Control.name) //TODO new screen
                         }
                         else{
-                            entryViewModel.nextAction()
                             navController.navigate(AppScreenEnum.Home.name)
                         }
                     })

@@ -39,17 +39,8 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            //started = SharingStarted.Eagerly,
             initialValue = AllUsers()
         )
-
-//    fun madeAttempt(made: Boolean){
-//        _userUiState.update {state->
-//            state.copy(
-//                madeAttempt = made
-//            )
-//        }
-//    }
 
     fun setIsLogged(isLogged: Boolean = true){
         _userUiState.update {state->
@@ -85,6 +76,14 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
         }
     }
 
+    private fun setEndTime(){
+        _userUiState.update {state->
+            state.copy(
+                endDateTime = now()
+            )
+        }
+    }
+
     fun setTestUseOption(){
         _userUiState.update {state->
             state.copy(
@@ -94,16 +93,17 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     }
 
     fun nextAction(){
-        _userUiState.update { state->
-            state.copy(
-                actionNumber = _userUiState.value.actionNumber + 1
-            )
-        }
-        if (_userUiState.value.actionNumber == numberOfActions){
+        if (_userUiState.value.actionNumber > numberOfActions){
             setIsFinished()
+            setEndTime()
         }
         else{
             AppState.actionNumber =  _userUiState.value.actionNumber
+            _userUiState.update { state->
+                state.copy(
+                    actionNumber = _userUiState.value.actionNumber + 1
+                )
+            }
         }
     }
 
@@ -148,20 +148,20 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
     fun addUSer(): Boolean{
         if (isValidAge() && isGenreSet()) {
             setIsRegistered()
-            saveUser()
+            insertUser()
             return true
         }
         return false
     }
 
-    private fun saveUser() = runBlocking{
+    private fun insertUser() = runBlocking{
         usersRepository.insertUser((_userUiState.value).toUser())
     }
 }
 
 data class UserUiState(
     val id: Int = 0,
-    val userName: String = "cliente",
+    val userName: String = "Cliente",
     val age: String = "",
     val gender: String = "",
     val actionNumber: Int = 1,
