@@ -7,6 +7,10 @@ import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material.icons.rounded.ShoppingCart
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+
+
 import com.example.gestureapp.R
 import com.example.gestureapp.model.BankProductItem
 import java.math.BigInteger
@@ -26,29 +30,29 @@ abstract class DataSource {
 
         val bankServices: List<BankProductItem> =
             listOf(
-                BankProductItem(R.string.service_balance, Icons.Rounded.ShoppingCart),
-                BankProductItem(R.string.service_extract, Icons.Rounded.Face),
-                BankProductItem(R.string.service_social, Icons.Rounded.Build),
-                BankProductItem(R.string.service_investment, Icons.Rounded.Call),
-                BankProductItem(R.string.service_international, Icons.Rounded.MailOutline),
-                BankProductItem(R.string.service_payment, Icons.Rounded.DateRange),
-                BankProductItem(R.string.service_pix, Icons.Rounded.DateRange)
+                BankProductItem(R.string.service_balance, R.drawable.saldo),
+                BankProductItem(R.string.service_extract, R.drawable.extrato),
+                BankProductItem(R.string.service_cards, R.drawable.cartoes ),
+                BankProductItem(R.string.service_investment, R.drawable.investimentos),
+                BankProductItem(R.string.service_international, R.drawable.internacional),
+                BankProductItem(R.string.service_payment, R.drawable.pagar),
+                BankProductItem(R.string.service_pix, R.drawable.pix)
             )
 
         val pixSendServices: List<BankProductItem> =
             listOf(
-                BankProductItem(R.string.pix_schedule, Icons.Rounded.Face),
-                BankProductItem(R.string.pix_copy_paste, Icons.Rounded.Build),
-                BankProductItem(R.string.pix_qr_code, Icons.Rounded.Call),
-                BankProductItem(R.string.pix_charge, Icons.Rounded.MailOutline),
-                BankProductItem(R.string.pix_transfer, Icons.Rounded.ShoppingCart),
-                BankProductItem(R.string.pix_credit_card, Icons.Rounded.ShoppingCart),
+                BankProductItem(R.string.pix_schedule, R.drawable.agendar),
+                BankProductItem(R.string.pix_copy_paste, R.drawable.copia_cola),
+                BankProductItem(R.string.pix_qr_code, R.drawable.qrcode),
+                BankProductItem(R.string.pix_charge, R.drawable.cobrar),
+                BankProductItem(R.string.pix_transfer, R.drawable.transferir),
+                BankProductItem(R.string.pix_credit_card, R.drawable.cartoes),
             )
 
         val pixReceiveServices: List<BankProductItem> =
             listOf(
-                BankProductItem(R.string.pix_charge, Icons.Rounded.ShoppingCart),
-                BankProductItem(R.string.pix_deposit, Icons.Rounded.Face)
+                BankProductItem(R.string.pix_charge, R.drawable.cobrar),
+                BankProductItem(R.string.pix_deposit, R.drawable.depositar)
             )
 
         val moneyList: List<Double> =

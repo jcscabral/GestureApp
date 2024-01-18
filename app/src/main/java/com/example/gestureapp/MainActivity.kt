@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontVariation
 import com.example.gestureapp.ui.AppScreen
 import com.example.gestureapp.ui.theme.GestureAppTheme
+import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity(){
             GestureAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = md_theme_dark_secondary //MaterialTheme.colorScheme.background
                 ) {
                     AppScreen()
                 }

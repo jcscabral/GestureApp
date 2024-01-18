@@ -56,9 +56,9 @@ fun PixConfirmed (
 
         ) {
             OutlinedCard(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+//                elevation = CardDefaults.cardElevation(
+//                    defaultElevation = 6.dp),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .padding(32.dp)
             ){

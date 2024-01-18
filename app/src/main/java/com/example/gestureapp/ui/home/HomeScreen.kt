@@ -12,13 +12,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,10 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,13 +54,17 @@ import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.components.ConfirmDialog
 import com.example.gestureapp.ui.components.ProductItem
 import com.example.gestureapp.ui.theme.Purple40
+import com.example.gestureapp.ui.theme.md_theme_dark_inversePrimary
+import com.example.gestureapp.ui.theme.md_theme_dark_onSurfaceVariant
+import com.example.gestureapp.ui.theme.md_theme_dark_outline
 import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 import com.example.gestureapp.ui.theme.md_theme_dark_surfaceVariant
+import com.example.gestureapp.ui.theme.md_theme_light_secondary
 
 @Composable
 fun ProductsList(
-    appSensorManager: AppSensorManager? = null,// AppSensorProvider
-    //.get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
+    appSensorManager: AppSensorManager = AppSensorProvider
+        .get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
     onPixButtonClick: () -> Unit,
 
     modifier: Modifier = Modifier
@@ -66,22 +76,22 @@ fun ProductsList(
         LazyRow(
             modifier = Modifier //TODO
                 .pointerInput(null) {
-//                    awaitPointerEventScope {
-//                        while (true) {
-//                            val event = awaitPointerEvent()
-//                            AppGestureEvents.onPointerEvent(
-//                                UserActionEnum.HORIZONTAL_SWIPE_HOME,
-//                                event,
-//                                appSensorManager)
-//                        }
-//                    }
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            AppGestureEvents.onPointerEvent(
+                                UserActionEnum.HORIZONTAL_SWIPE_HOME,
+                                event,
+                                appSensorManager)
+                        }
+                    }
                 }
         ){
             items(listOfServices){
                 Column(horizontalAlignment = Alignment.CenterHorizontally){
                     ProductItem(
                         nameId = it.nameId,
-                        imageVector = it.imageIcon ,
+                        imageVector = ImageVector.vectorResource(it.imageId) ,
                         userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME_BUTTON,
                         onButtonClick = {
                             if (it.nameId == R.string.service_pix) {
@@ -135,21 +145,32 @@ fun HomeScreen(
         Box(
             Modifier
                 .fillMaxWidth()
-                .background(color = md_theme_dark_secondary)
+                .background(color = md_theme_dark_inversePrimary) //md_theme_dark_secondary
             ,
         ) {
             Text(
-                "Bem-vindo $userName! Conta n°${AppState.id}",
+                text = "Conta n°${AppState.id}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 16.dp)
             )
+            Icon(
+                painter = painterResource(
+                    R.drawable.meu_banco),
+                tint = Color.White,
+                contentDescription = "Bem-vindo",
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(4.dp)
+                    .align(Alignment.Center)
+            )
+
             Text(
                 "Ação ${AppState.actionNumber}",
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.White,
+                color = md_theme_dark_onSurfaceVariant,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp)

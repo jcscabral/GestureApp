@@ -16,8 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.AppSensorProvider
@@ -79,7 +81,7 @@ fun PixHomeScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
                             nameId = it.nameId,
-                            imageVector = it.imageIcon ,
+                            imageVector = ImageVector.vectorResource(it.imageId) ,
                             userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_SEND,
                             onButtonClick = {
                                 if (it.nameId == R.string.pix_transfer) {
@@ -109,7 +111,7 @@ fun PixHomeScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
                             nameId = it.nameId,
-                            imageVector = it.imageIcon ,
+                            imageVector = ImageVector.vectorResource(it.imageId) ,
                             userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
                             onButtonClick = {
                                 Toast.makeText(

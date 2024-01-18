@@ -5,7 +5,7 @@
     <string name="service_investment">Investimentos</string>
     <string name="service_international">Internacional</string>
     <string name="service_payment">Pagar</string>
-    <string name="service_social">Social</string>
+    <string name="service_cards">Cartões</string>
     <string name="service_pix">PIX</string>
     <string name="insert_pix_key">Transferência PIX:</string>
     <string name="recipient">Destinatário: %1$s</string>
