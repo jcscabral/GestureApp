@@ -1,13 +1,11 @@
 package com.example.gestureapp.ui.home
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,12 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +26,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -56,16 +50,13 @@ import com.example.gestureapp.ui.components.ProductItem
 import com.example.gestureapp.ui.theme.Purple40
 import com.example.gestureapp.ui.theme.md_theme_dark_inversePrimary
 import com.example.gestureapp.ui.theme.md_theme_dark_onSurfaceVariant
-import com.example.gestureapp.ui.theme.md_theme_dark_outline
-import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 import com.example.gestureapp.ui.theme.md_theme_dark_surfaceVariant
-import com.example.gestureapp.ui.theme.md_theme_light_secondary
 
 @Composable
 fun ProductsList(
     isTest: Boolean,
     appSensorManager: AppSensorManager = AppSensorProvider
-        .get(UserActionEnum.HORIZONTAL_SWIPE_HOME),
+        .get(UserActionEnum.SWIPE_HOME),
     onPixButtonClick: () -> Unit,
 
     modifier: Modifier = Modifier
@@ -82,7 +73,7 @@ fun ProductsList(
                             while (true) {
                                 val event = awaitPointerEvent()
                                 AppGestureEvents.onPointerEvent(
-                                    UserActionEnum.HORIZONTAL_SWIPE_HOME,
+                                    UserActionEnum.SWIPE_HOME,
                                     event,
                                     appSensorManager
                                 )
@@ -96,7 +87,7 @@ fun ProductsList(
                     ProductItem(
                         nameId = it.nameId,
                         imageVector = ImageVector.vectorResource(it.imageId) ,
-                        userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_HOME_BUTTON,
+                        userActionEnum = UserActionEnum.SWIPE_HOME_BUTTON,
                         onButtonClick = {
                             if (it.nameId == R.string.service_pix) {
                                 onPixButtonClick()

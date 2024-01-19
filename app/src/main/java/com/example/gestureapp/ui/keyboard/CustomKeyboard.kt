@@ -41,12 +41,12 @@ import com.example.gestureapp.ui.theme.CyanKeyboard
 
 @Composable
 fun CustomKeyboard(
+    isTest: Boolean ,
     userActionEnum: UserActionEnum,
     text: String,
     textField: String,
     label: String,
     isError: Boolean =  false,
-    //outlineTextColor: Color  = MaterialTheme.colorScheme.secondaryContainer,
     onButtonClicked: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
@@ -85,7 +85,21 @@ fun CustomKeyboard(
                     .padding(16.dp)
             ) {
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                if(isTest){
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        AppGestureEvents.onPointerEvent(
+                                            userActionEnum,
+                                            event,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    ,
                     onClick = onButtonClicked
                 ) {
                     Text(
@@ -100,6 +114,7 @@ fun CustomKeyboard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 KeyboardGrid(
+                    isTest,
                     userActionEnum,
                     onItemClick = onItemClick
 
@@ -113,6 +128,7 @@ fun CustomKeyboard(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun KeyboardGrid(
+    isTest: Boolean,
     userActionEnum: UserActionEnum,
     digitList: List<String> =  DataSource.keyboardDigits,
     onItemClick: (data: String)-> Unit
@@ -121,8 +137,8 @@ fun KeyboardGrid(
 
     Surface(
         color = Color.Black,
-                modifier = Modifier
-                .fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
@@ -130,7 +146,7 @@ fun KeyboardGrid(
                 .padding(top = 8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
                 contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
@@ -146,6 +162,7 @@ fun KeyboardGrid(
                     }
                 ) { _: Int, item ->
                     ButtonDigit(
+                        isTest,
                         userActionEnum,
                         data = item,
                         onItemClick = onItemClick
@@ -158,6 +175,7 @@ fun KeyboardGrid(
 
 @Composable
 fun ButtonDigit(
+    isTest: Boolean ,
     userActionEnum: UserActionEnum,
     data: String,
     onItemClick: (data: String)-> Unit
@@ -172,13 +190,15 @@ fun ButtonDigit(
             .padding(4.dp)
             .pointerInput(Unit) {
                 awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        AppGestureEvents.onPointerEvent(
-                            userActionEnum,
-                            event,
-                            data
-                        )
+                    if(isTest){
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            AppGestureEvents.onPointerEvent(
+                                userActionEnum,
+                                event,
+                                data
+                            )
+                        }
                     }
                 }
             }
@@ -208,6 +228,7 @@ fun ButtonDigit(
 fun CustomKeyboardPreview() {
     GestureAppTheme {
         CustomKeyboard(
+            isTest = false,
             userActionEnum =  UserActionEnum.KEYBOARD_PIX_CPF,
             text = "Olá",
             textField = "",

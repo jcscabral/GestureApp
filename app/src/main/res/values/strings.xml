@@ -39,9 +39,9 @@
     <string name="button_entrar">Entrar</string>
     <string name="button_escolher">Escolher</string>
 
-    <string name="text_option_train">Inicialmente você deve escolher a opção Treino para lhe ajudar a
-        se familiarizar com o simulador do aplicativo bancário.</string>
-    <string name="text_option_test">Você deve escolher a opção Teste após treinamento anterior.
-        .Se já trienou, pode começar!</string>
+    <string name="text_option_train">Inicialmente você deve escolher a opção <bold>Treino</bold>
+        para lhe ajudar a se familiarizar com o simulador do aplicativo bancário.</string>
+    <string name="text_option_test">Você deve escolher a opção <bold>Teste</bold> após
+        treinamento anterior. Se já trienou, pode começar!</string>
 
 </resources>

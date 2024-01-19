@@ -36,7 +36,9 @@ import com.example.gestureapp.ui.theme.Purple40
 
 @Composable
 fun PixConfirmed (
-    actionNumber: Int,
+    currentCpf: String,
+    currentName: String,
+    currentMoney: String,
     onButtonClick: ()-> Unit,
     modifier: Modifier =  Modifier
 ) {
@@ -56,8 +58,6 @@ fun PixConfirmed (
 
         ) {
             OutlinedCard(
-//                elevation = CardDefaults.cardElevation(
-//                    defaultElevation = 6.dp),
                 border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .padding(32.dp)
@@ -76,7 +76,7 @@ fun PixConfirmed (
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = "${DataSource.cpfList[actionNumber - 1]}",
+                        text = currentCpf,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier
@@ -89,7 +89,7 @@ fun PixConfirmed (
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        text = "${DataSource.namesList[actionNumber - 1]}",
+                        text = currentName,
                         style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -102,9 +102,7 @@ fun PixConfirmed (
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = "${
-                            moneyFormatter(DataSource.moneyList[actionNumber - 1])
-                        }",
+                        text = currentMoney,
                         style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -151,7 +149,9 @@ fun PixConfirmed (
 @Preview
 fun Preview(){
     PixConfirmed (
-        actionNumber = 1,
+        currentCpf = "000.000.000-00",
+        currentName = "João",
+        currentMoney = "R$100,00",
         onButtonClick = {},
         modifier = Modifier
     )

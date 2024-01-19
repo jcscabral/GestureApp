@@ -7,6 +7,7 @@ import com.example.gestureapp.ui.keyboard.CustomKeyboard
 
 @Composable
 fun PixMoneyScreen(
+    isTest: Boolean,
     madeAttempt: Boolean,
     isMoneyWrong: Boolean,
     balance: Double = 0.0,
@@ -17,6 +18,7 @@ fun PixMoneyScreen(
 
 ){
     CustomKeyboard(
+        isTest =  isTest,
         userActionEnum = UserActionEnum.KEYBOARD_PIX_CPF,
         text = "Insira o valor",
         textField = textField,

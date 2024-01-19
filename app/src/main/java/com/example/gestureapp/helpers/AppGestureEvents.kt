@@ -26,8 +26,8 @@ abstract class AppGestureEvents {
             return eventTypeNumber
         }
         /*
-        Events fired by key stroke by [CustomKeyboard]
-        With digit, without sensor (captured outside)
+         Events fired by [CustomKeyboard] with digit or not (button),
+         without sensor (captured outside)
          */
         fun onPointerEvent(
             userActionEnum: UserActionEnum,
@@ -39,7 +39,7 @@ abstract class AppGestureEvents {
                 val id = AppState.id
                 val sessionId = AppState.actionNumber
                 val position = change.position
-                val action = change.type.toString()
+//                val action = change.type.toString()
                 val x = position.x
                 val y = position.y
                 val pressure = change.pressure

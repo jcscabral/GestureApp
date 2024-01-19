@@ -1,5 +1,6 @@
 package com.example.gestureapp.ui
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gestureapp.AppViewModelProvider
 import com.example.gestureapp.R
+import com.example.gestureapp.data.DataSource
 import com.example.gestureapp.data.UserActionEnum
+import com.example.gestureapp.moneyFormatter
 import com.example.gestureapp.ui.auth.AuthScreen
 import com.example.gestureapp.ui.auth.AuthViewModel
 import com.example.gestureapp.ui.control.ControlScreen
@@ -93,7 +96,12 @@ fun AppScreen(
                         currentScreen != AppScreenEnum.Confirmed)
                 ,
                 showDialog =  showDialog,
-                navigateUp = {
+                onExit = {
+                    entryViewModel.reset()
+                    entryViewModel.setUseOption(DataSource.useOption.last())
+                    homeViewModel.reset()
+                },
+                onNavigateUp = {
                     when(currentScreen){
                         AppScreenEnum.PixReceiver -> keyboardViewModel.setMoneyType()
                         else -> keyboardViewModel.setPasswordType()
@@ -175,6 +183,7 @@ fun AppScreen(
 
                 entryViewModel.setCurrentUserId()
                 AuthScreen(
+                    isTest = userUiState.isTest,
                     userActionEnum = UserActionEnum.KEYBOARD_LOGIN,
                     text =  "Olá cliente, seja bem-vindo!",
                     textField = keyboardUiState.value.textValue,
@@ -182,7 +191,8 @@ fun AppScreen(
                     isPasswordWrong = authUiState.value.isPasswordWrong,
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
-                        if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
+                        if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
+                            userUiState.isTest) || !userUiState.isTest) {
                             entryViewModel.setIsLogged()
                             keyboardViewModel.clear()
                             navController.navigate(AppScreenEnum.Home.name)
@@ -190,7 +200,8 @@ fun AppScreen(
                     },
                     onKeyboardClicked = {
                         if (!keyboardViewModel.onItemClick(it)){
-                            if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
+                            if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
+                                userUiState.isTest)|| !userUiState.isTest) {
                                 entryViewModel.setIsLogged()
                                 keyboardViewModel.clear()
                                 navController.navigate(AppScreenEnum.Home.name)
@@ -238,6 +249,7 @@ fun AppScreen(
                 }
 
                 PixMoneyScreen(
+                    isTest = userUiState.isTest,
                     textField = keyboardUiState.value.textValue,
                     madeAttempt = keyboardUiState.value.madeAttempt,
                     isMoneyWrong = pixUiState.isMoneyWrong,
@@ -245,7 +257,7 @@ fun AppScreen(
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
                         val deduct = keyboardViewModel.getTextAsDouble()
-                        if (pixViewModel.isMoneyMatched(deduct)) {
+                        if (pixViewModel.isMoneyMatched(deduct) || !userUiState.isTest) {
                             homeViewModel.deduct(deduct)
                             keyboardViewModel.setCpfType()
                             navController.navigate(AppScreenEnum.PixReceiver.name)
@@ -254,7 +266,7 @@ fun AppScreen(
                     onKeyboardClicked = {
                         if (!keyboardViewModel.onItemClick(it)){
                             val deduct = keyboardViewModel.getTextAsDouble()
-                            if (pixViewModel.isMoneyMatched(deduct)) {
+                            if (pixViewModel.isMoneyMatched(deduct) || !userUiState.isTest) {
                                 homeViewModel.deduct(deduct)
                                 keyboardViewModel.setCpfType()
                                 navController.navigate(AppScreenEnum.PixReceiver.name)
@@ -270,11 +282,13 @@ fun AppScreen(
                 }
 
                 PixCpfScreen(
+                    isTest = userUiState.isTest,
                     madeAttempt = keyboardUiState.value.madeAttempt,
                     isCpfWrong = pixUiState.isCpfWrong,
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
-                        if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue)) {
+                        if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue) ||
+                            !userUiState.isTest) {
                             keyboardViewModel.setPasswordType()
                             navController.navigate(AppScreenEnum.Auth.name)
                         }
@@ -282,7 +296,8 @@ fun AppScreen(
                     onKeyboardClicked = {
                         if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
                             keyboardViewModel.madeAttempt()
-                            if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue)) {
+                            if (pixViewModel.isCpfMatched(keyboardUiState.value.textValue) ||
+                                !userUiState.isTest) {
                                 keyboardViewModel.setPasswordType()
                                 navController.navigate(AppScreenEnum.Auth.name)
                             }
@@ -298,13 +313,16 @@ fun AppScreen(
                 }
 
                 AuthScreen(
+                    isTest = userUiState.isTest,
                     userActionEnum = UserActionEnum.KEYBOARD_AUTH,
                     text = "Autenticação da senha",
                     madeAttempt = keyboardUiState.value.madeAttempt,
                     isPasswordWrong = authUiState.value.isPasswordWrong,
                     onButtonClicked = {
                         keyboardViewModel.madeAttempt()
-                        if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
+                        if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
+                            userUiState.isTest) || !userUiState.isTest) {
+                            Log.i("FIRED", "isTest:${userUiState.isTest}")
                             keyboardViewModel.clear()
                             homeViewModel.confirmTransaction()
                             navController.navigate(AppScreenEnum.Confirmed.name)
@@ -312,7 +330,9 @@ fun AppScreen(
                     },
                     onKeyboardClicked = {
                         if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
-                            if (authViewModel.isMatched(keyboardUiState.value.textValue)) {
+                            if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
+                                userUiState.isTest) || !userUiState.isTest) {
+                                Log.i("FIRED", "isTest:${userUiState.isTest}")
                                 keyboardViewModel.clear()
                                 homeViewModel.confirmTransaction()
                                 navController.navigate(AppScreenEnum.Confirmed.name)
@@ -325,9 +345,12 @@ fun AppScreen(
             composable(route = AppScreenEnum.Confirmed.name) {
 
                 PixConfirmed(
-                    actionNumber = userUiState.actionNumber,
+                    currentCpf = pixUiState.currentCpf,
+                    currentMoney = moneyFormatter(pixUiState.currentMoney),
+                    currentName = DataSource.namesList[userUiState.actionNumber -1], //TODO
                     onButtonClick = {
-                        if (entryViewModel.nextAction()){
+                        if (entryViewModel.nextAction() ||
+                            !userUiState.isTest){
                             navController.navigate(AppScreenEnum.Home.name)
                         }
                         else{
@@ -347,8 +370,9 @@ fun AppScreen(
 fun AppBar(
     currentScreen: AppScreenEnum,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
     showDialog: MutableState<Boolean>,
+    onExit: () -> Unit,
+    onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -391,7 +415,7 @@ fun AppBar(
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
+                IconButton(onClick = onNavigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         tint = Color.White,
@@ -403,6 +427,7 @@ fun AppBar(
         actions = {
             if(currentScreen == AppScreenEnum.Home){
                 Button(onClick = {
+                    onExit()
                     showDialog.value = true
                 }
                 ) {

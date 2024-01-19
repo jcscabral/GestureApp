@@ -68,7 +68,9 @@ fun ControlScreen(
     modifier: Modifier =  Modifier
 ){    Column {
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             onClick = onNewUser
         ) {
             Text(

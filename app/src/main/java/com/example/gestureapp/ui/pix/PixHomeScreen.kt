@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gestureapp.AppSensorProvider
 import com.example.gestureapp.R
@@ -37,7 +35,7 @@ import com.example.gestureapp.ui.theme.Purple40
 fun PixHomeScreen(
     isTest: Boolean,
     appSensorManager: AppSensorManager = AppSensorProvider.get(
-        UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE),
+        UserActionEnum.SWIPE_PIX_SEND),
     onSendPixButtonClick: ()-> Unit,
     modifier: Modifier =  Modifier
 ) {
@@ -58,7 +56,7 @@ fun PixHomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            //verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Enviar",
@@ -76,7 +74,7 @@ fun PixHomeScreen(
                                 val event = awaitPointerEvent()
                                 if(isTest){
                                     AppGestureEvents.onPointerEvent(
-                                        UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
+                                        UserActionEnum.SWIPE_PIX_SEND,
                                         event,
                                         appSensorManager)
                                 }
@@ -89,7 +87,7 @@ fun PixHomeScreen(
                         ProductItem(
                             nameId = it.nameId,
                             imageVector = ImageVector.vectorResource(it.imageId) ,
-                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_SEND,
+                            userActionEnum = UserActionEnum.SWIPE_PIX_SEND_BUTTON,
                             onButtonClick = {
                                 if (it.nameId == R.string.pix_transfer) {
                                     onSendPixButtonClick()
@@ -106,7 +104,6 @@ fun PixHomeScreen(
                     }
                 }
             }
-            Spacer(modifier = modifier.height(4.dp))
             Text(text = "Receber",
                 //textAlign = TextAlign.Left,
                 style = MaterialTheme.typography.titleLarge,
@@ -114,15 +111,15 @@ fun PixHomeScreen(
                 modifier = Modifier.padding(top = 16.dp)
                 )
             LazyRow(
-                modifier = Modifier
-                    .padding(8.dp)
+//                modifier = Modifier
+//                    .padding(8.dp)
             ){
                 items(pixReceiveServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
                             nameId = it.nameId,
                             imageVector = ImageVector.vectorResource(it.imageId) ,
-                            userActionEnum = UserActionEnum.HORIZONTAL_SWIPE_PIX_RECEIVE,
+                            userActionEnum = UserActionEnum.SWIPE_PIX_RECEIVE_BUTTON,
                             onButtonClick = {
                                 Toast.makeText(
                                     context, "Opção inválida na pesquisa!",
@@ -136,4 +133,17 @@ fun PixHomeScreen(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun PixHomePreview(){
+    PixHomeScreen(
+        isTest = false,
+        appSensorManager= AppSensorProvider.get(
+            UserActionEnum.SWIPE_PIX_SEND),
+    onSendPixButtonClick= {},
+    modifier = Modifier
+    )
 }

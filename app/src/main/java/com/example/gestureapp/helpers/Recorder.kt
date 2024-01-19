@@ -12,7 +12,7 @@ abstract class Recorder {
         private const val sensorsFile = "sensorsData.csv"
         private const val swipeFile = "swipeData.csv"
         private const val keyboardFile = "keyboardData.csv"
-        private const val buttonFile = "keyboardData.csv"
+        private const val buttonFile = "buttomdData.csv"
 
         private fun getParent(): File{
 
@@ -37,9 +37,9 @@ abstract class Recorder {
         fun keyboardData(data: String){
             append(getFile(keyboardFile), data)
         }
-//        fun buttondData(data: String){
-//            append(getFile(buttonFile), data)
-//        }
+        fun buttondData(data: String){
+            append(getFile(buttonFile), data)
+        }
         fun append(file: File, data: String){
             try {
                 FileOutputStream(file, true)

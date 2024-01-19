@@ -7,6 +7,7 @@ import com.example.gestureapp.ui.keyboard.CustomKeyboard
 
 @Composable
 fun PixCpfScreen(
+    isTest: Boolean,
     madeAttempt: Boolean,
     isCpfWrong: Boolean,
     onButtonClicked: ()-> Unit,
@@ -14,6 +15,7 @@ fun PixCpfScreen(
     textField: String
 ){
     CustomKeyboard(
+        isTest = isTest,
         userActionEnum = UserActionEnum.KEYBOARD_PIX_CPF,
         text = "Insira a chave do PIX",
         textField = textField,

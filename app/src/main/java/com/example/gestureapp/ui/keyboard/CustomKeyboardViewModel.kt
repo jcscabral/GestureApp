@@ -25,6 +25,7 @@ import kotlin.math.round
 enum class KeyboardTypeEnum{
     MONEY, CPF, PASSWORD,
 }
+
 class CustomKeyboardViewModel(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
@@ -68,14 +69,17 @@ class CustomKeyboardViewModel(
     }
     fun setMoneyType(){
         clear()
+        madeAttempt(false)
         setKeyboardType(KeyboardTypeEnum.MONEY)
     }
     fun setCpfType(){
         clear()
+        madeAttempt(false)
         setKeyboardType(KeyboardTypeEnum.CPF)
     }
     fun setPasswordType(){
         clear()
+        madeAttempt(false)
         setKeyboardType(KeyboardTypeEnum.PASSWORD)
     }
     fun getTextAsDouble(): Double{

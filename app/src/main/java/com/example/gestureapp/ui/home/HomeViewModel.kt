@@ -28,4 +28,11 @@ class HomeViewModel(
         }
     }
 
+    fun reset(){
+        _balanceUiState.update {
+            ACCOUNT_BALANCE
+        }
+        transactionBalance = 0.00
+    }
+
 }

@@ -72,7 +72,9 @@ fun OptionUseScreen(
                             onOptionClicked(use)
                         }
                     )
-                    Text(use)
+                    Text(
+                        text = use,
+                        fontSize = 16.sp)
                 }
             }
 
@@ -93,7 +95,7 @@ fun OptionUseScreen(
         }
         Spacer(modifier = Modifier
             .height(16.dp)
-            .padding(start = 6.dp, top = 12.dp, end = 6.dp)
+            .padding(start = 8.dp, top = 24.dp, end = 8.dp, bottom = 8.dp)
         )
         Text(
             text =

@@ -29,7 +29,6 @@ import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 
 
 @JvmOverloads
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProductItem(
     nameId: Int,
@@ -62,8 +61,6 @@ fun ProductItem(
 //                .pointerInteropFilter() {
 //                    AppGestureEvents.onButtonMotionEvent(userActionEnum, it)
 //                }
-
-
         ) {
 
             Button(
@@ -100,7 +97,7 @@ fun Preview(){
     ProductItem(
         nameId = 0,
         imageVector = Icons.Default.Info ,
-        userActionEnum =  UserActionEnum.HORIZONTAL_SWIPE_HOME,
+        userActionEnum =  UserActionEnum.SWIPE_HOME,
         onButtonClick = {}
     )
 }

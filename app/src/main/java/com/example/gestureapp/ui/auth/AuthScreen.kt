@@ -8,6 +8,7 @@ import com.example.gestureapp.ui.keyboard.CustomKeyboard
 
 @Composable
 fun AuthScreen(
+    isTest: Boolean,
     userActionEnum : UserActionEnum,
     text: String,
     textField: String,
@@ -19,6 +20,7 @@ fun AuthScreen(
 )
 {
    CustomKeyboard(
+       isTest =  isTest,
         userActionEnum = userActionEnum,
         text = text,
         textField = textField,

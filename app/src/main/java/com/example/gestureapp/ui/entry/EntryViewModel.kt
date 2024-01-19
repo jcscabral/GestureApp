@@ -42,6 +42,15 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
             initialValue = AllUsers()
         )
 
+    fun reset(){
+        _userUiState.update {state->
+            state.copy(
+                isLogged = false,
+                actionNumber = 1
+            )
+        }
+    }
+
     fun setIsLogged(isLogged: Boolean = true){
         _userUiState.update {state->
             state.copy(
