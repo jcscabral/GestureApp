@@ -162,6 +162,7 @@ fun AppScreen(
             composable(route = AppScreenEnum.Option.name){
 
                 keyboardViewModel.disableAllSensors()
+
                 OptionUseScreen(
                     useOption = userUiState.useOption,
                     onOptionClicked = {
@@ -176,6 +177,8 @@ fun AppScreen(
                 keyboardViewModel.setPasswordType()
             }
             composable(route = AppScreenEnum.LogIn.name) {
+
+                keyboardViewModel.disableAllSensors()
 
                 if(userUiState.isTest){
                     keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
@@ -234,6 +237,7 @@ fun AppScreen(
             composable(route = AppScreenEnum.PixHome.name) {
 
                 keyboardViewModel.disableAllSensors()
+
                 PixHomeScreen(
                     isTest = userUiState.isTest,
                     onSendPixButtonClick = {
@@ -243,6 +247,8 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.PixMoney.name) {
+
+                keyboardViewModel.disableAllSensors()
 
                 if(userUiState.isTest){
                     keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_MONEY)
@@ -277,6 +283,8 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.PixReceiver.name) {
 
+                keyboardViewModel.disableAllSensors()
+
                 if(userUiState.isTest) {
                     keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_PIX_CPF)
                 }
@@ -308,8 +316,10 @@ fun AppScreen(
             }
             composable(route = AppScreenEnum.Auth.name) {
 
+                keyboardViewModel.disableAllSensors()
+
                 if(userUiState.isTest) {
-                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_LOGIN)
+                    keyboardViewModel.activeSensor(UserActionEnum.KEYBOARD_AUTH)
                 }
 
                 AuthScreen(
@@ -322,7 +332,6 @@ fun AppScreen(
                         keyboardViewModel.madeAttempt()
                         if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
                             userUiState.isTest) || !userUiState.isTest) {
-                            Log.i("FIRED", "isTest:${userUiState.isTest}")
                             keyboardViewModel.clear()
                             homeViewModel.confirmTransaction()
                             navController.navigate(AppScreenEnum.Confirmed.name)
@@ -332,7 +341,6 @@ fun AppScreen(
                         if (!keyboardViewModel.onItemClick(it)){ //returns false when "OK" pressed
                             if ((authViewModel.isMatched(keyboardUiState.value.textValue) &&
                                 userUiState.isTest) || !userUiState.isTest) {
-                                Log.i("FIRED", "isTest:${userUiState.isTest}")
                                 keyboardViewModel.clear()
                                 homeViewModel.confirmTransaction()
                                 navController.navigate(AppScreenEnum.Confirmed.name)
@@ -343,6 +351,8 @@ fun AppScreen(
                 )
             }
             composable(route = AppScreenEnum.Confirmed.name) {
+
+                keyboardViewModel.disableAllSensors()
 
                 PixConfirmed(
                     currentCpf = pixUiState.currentCpf,

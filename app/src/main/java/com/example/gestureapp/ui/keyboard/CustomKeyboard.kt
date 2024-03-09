@@ -93,7 +93,7 @@ fun CustomKeyboard(
                                         val event = awaitPointerEvent()
                                         AppGestureEvents.onPointerEvent(
                                             userActionEnum,
-                                            event,
+                                            event
                                         )
                                     }
                                 }
@@ -103,7 +103,7 @@ fun CustomKeyboard(
                     onClick = onButtonClicked
                 ) {
                     Text(
-                        text = stringResource(R.string.button_entrar),
+                        text = stringResource(R.string.button_confirmar),
                         fontSize = 16.sp
                     )
                 }

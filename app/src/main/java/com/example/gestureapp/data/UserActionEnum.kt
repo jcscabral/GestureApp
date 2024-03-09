@@ -1,7 +1,6 @@
 package com.example.gestureapp.data
 
 enum class UserActionEnum {
-
     SWIPE_HOME,
     SWIPE_HOME_BUTTON,
     SWIPE_PIX_SEND,

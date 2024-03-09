@@ -85,6 +85,7 @@ fun PixHomeScreen(
                 items(pixSendServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
+                            isTest =  isTest,
                             nameId = it.nameId,
                             imageVector = ImageVector.vectorResource(it.imageId) ,
                             userActionEnum = UserActionEnum.SWIPE_PIX_SEND_BUTTON,
@@ -117,6 +118,7 @@ fun PixHomeScreen(
                 items(pixReceiveServices){
                     Column(horizontalAlignment = Alignment.CenterHorizontally){
                         ProductItem(
+                            isTest  = isTest,
                             nameId = it.nameId,
                             imageVector = ImageVector.vectorResource(it.imageId) ,
                             userActionEnum = UserActionEnum.SWIPE_PIX_RECEIVE_BUTTON,

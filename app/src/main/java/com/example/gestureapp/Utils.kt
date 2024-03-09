@@ -22,4 +22,6 @@ fun moneyFormatter(money: Double): String{
     return formatter.format(money)
 }
 
+fun String.addCharAtIndex(char: Char, index: Int) =
+    StringBuilder(this).apply { insert(index, char) }.toString()
 

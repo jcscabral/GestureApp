@@ -1,8 +1,6 @@
 package com.example.gestureapp.helpers
 
 import android.util.Log
-import android.view.MotionEvent
-import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import com.example.gestureapp.data.AppState
@@ -25,21 +23,16 @@ abstract class AppGestureEvents {
             }
             return eventTypeNumber
         }
-        /*
-         Events fired by [CustomKeyboard] with digit or not (button),
-         without sensor (captured outside)
-         */
+
         fun onPointerEvent(
             userActionEnum: UserActionEnum,
-            event: PointerEvent,
-            digit: String = ""
-        ){
-            val eventType  = event.type //PointerEventType
+            event: PointerEvent
+        ) {
+            val eventType = event.type //PointerEventType
             for (change in event.changes) {
                 val id = AppState.id
                 val sessionId = AppState.actionNumber
                 val position = change.position
-//                val action = change.type.toString()
                 val x = position.x
                 val y = position.y
                 val pressure = change.pressure
@@ -51,7 +44,31 @@ abstract class AppGestureEvents {
 //                            "pressure:$pressure;x:$x;y:$y;evenTime:$uptimeMillis")
 
                 val text = "$id;$sessionId;${userActionEnum.ordinal};${eventNumber(eventType)};" +
+                        "$pressure;$x;$y;$uptimeMillis"
+
+                Recorder.buttonData(text)
+            }
+        }
+
+        fun onPointerEvent(
+            userActionEnum: UserActionEnum,
+            event: PointerEvent,
+            digit: String = ""
+        ){
+            PointerEventType
+            val eventType  = event.type //PointerEventType
+            for (change in event.changes) {
+                val id = AppState.id
+                val sessionId = AppState.actionNumber
+                val position = change.position
+                val x = position.x
+                val y = position.y
+                val pressure = change.pressure
+                val uptimeMillis = change.uptimeMillis
+
+                val text = "$id;$sessionId;${userActionEnum.ordinal};${eventNumber(eventType)};" +
                         "$digit;$pressure;$x;$y;$uptimeMillis"
+
                 Recorder.keyboardData(text)
             }
         }
@@ -65,7 +82,6 @@ abstract class AppGestureEvents {
         ){
 
             val eventType  = event.type
-            //val centroidSize = event.calculateCentroidSize(false)
             for (change in event.changes) {
 
                 if (!appSensorManager.activated) {

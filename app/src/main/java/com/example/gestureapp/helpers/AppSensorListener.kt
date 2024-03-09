@@ -8,17 +8,13 @@ import com.example.gestureapp.data.UserActionEnum
 import com.example.gestureapp.data.AppState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class AppSensorListener: SensorEventListener {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 //    private val events = Channel<SensorEvent>(100)
     private val actionTypeEnum : UserActionEnum
-    private var actionNumber: Int = 0
 
     constructor(actionTypeEnum: UserActionEnum){
         this.actionTypeEnum = actionTypeEnum
@@ -36,7 +32,7 @@ class AppSensorListener: SensorEventListener {
             4 -> "GYROSCOPE"
             else -> "OTHER SENSOR"
         }
-        Log.i(eventName, "action:${actionTypeEnum};id:${AppState.id};session:${AppState.actionNumber};" +
+        Log.i(eventName, "id:${AppState.id};action:${actionTypeEnum};session:${AppState.actionNumber};" +
                 "X:${event.values[0]};Y:${event.values[1]};Z:${event.values[2]};Ts:${event.timestamp}")
 
         scope.launch {

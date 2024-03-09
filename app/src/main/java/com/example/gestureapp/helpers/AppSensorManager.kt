@@ -28,7 +28,6 @@ class AppSensorManager{
     }
 
     private fun register(){
-        //if(isTest){}
         sensorManager.registerListener(
             appSensorListener,
             magneticSensor,

@@ -2,17 +2,17 @@ package com.example.gestureapp.helpers
 
 import android.os.Environment
 import android.util.Log
-import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
 
 abstract class Recorder {
     companion object{
+
         private const val parentDir = "GestureApp"
         private const val sensorsFile = "sensorsData.csv"
         private const val swipeFile = "swipeData.csv"
         private const val keyboardFile = "keyboardData.csv"
-        private const val buttonFile = "buttomdData.csv"
+        private const val buttonFile = "buttonData.csv"
 
         private fun getParent(): File{
 
@@ -37,10 +37,10 @@ abstract class Recorder {
         fun keyboardData(data: String){
             append(getFile(keyboardFile), data)
         }
-        fun buttondData(data: String){
+        fun buttonData(data: String){
             append(getFile(buttonFile), data)
         }
-        fun append(file: File, data: String){
+        private fun append(file: File, data: String){
             try {
                 FileOutputStream(file, true)
                     .bufferedWriter().use {

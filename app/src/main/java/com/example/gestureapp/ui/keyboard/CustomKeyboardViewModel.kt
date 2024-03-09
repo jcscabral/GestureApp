@@ -57,6 +57,7 @@ class CustomKeyboardViewModel(
             loginSensorState.active(false)
             moneySensorState.active(false)
             cpfSensorState.active(false)
+            authSensorState.active(false)
         }
     }
     private fun setKeyboardType(keyboardTypeEnum: KeyboardTypeEnum){
@@ -88,6 +89,7 @@ class CustomKeyboardViewModel(
             .replace(".","")
             .replace(",",".")
             .trim()
+            .addCharAtIndex('0', 0) // avoid empty
             .toDouble()
     }
     private fun setTextValue(text: String){

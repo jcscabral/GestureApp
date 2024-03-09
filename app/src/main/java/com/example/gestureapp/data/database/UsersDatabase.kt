@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
 @Database(entities =
     [User::class],
     version = 1,
-    //autoMigrations = [AutoMigration(from = 1, to = 2)],
+    //autoMigrations = [AutoMigration(from = 1, to = 2)], // improvements
     exportSchema = false
     )
 abstract class UsersDatabase: RoomDatabase() {
@@ -21,7 +21,7 @@ abstract class UsersDatabase: RoomDatabase() {
         private var Instance: UsersDatabase? = null
 
         fun getDatabase(context: Context):UsersDatabase{
-            //context.deleteDatabase("user_database") //Bradock approach TODO
+            //context.deleteDatabase("user_database") // Bradock approach WATCH OUT!! TODO
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, UsersDatabase::class.java, "user_database")
                     .build().also { Instance = it }

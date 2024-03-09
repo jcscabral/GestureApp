@@ -58,7 +58,6 @@ fun ProductsList(
     appSensorManager: AppSensorManager = AppSensorProvider
         .get(UserActionEnum.SWIPE_HOME),
     onPixButtonClick: () -> Unit,
-
     modifier: Modifier = Modifier
 ){
     val listOfServices: List<BankProductItem> = DataSource.bankServices
@@ -85,6 +84,7 @@ fun ProductsList(
             items(listOfServices){
                 Column(horizontalAlignment = Alignment.CenterHorizontally){
                     ProductItem(
+                        isTest = isTest,
                         nameId = it.nameId,
                         imageVector = ImageVector.vectorResource(it.imageId) ,
                         userActionEnum = UserActionEnum.SWIPE_HOME_BUTTON,

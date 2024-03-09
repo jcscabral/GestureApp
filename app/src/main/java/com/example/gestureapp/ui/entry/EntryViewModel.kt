@@ -49,6 +49,7 @@ class EntryViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 actionNumber = 1
             )
         }
+        AppState.actionNumber = 1
     }
 
     fun setIsLogged(isLogged: Boolean = true){

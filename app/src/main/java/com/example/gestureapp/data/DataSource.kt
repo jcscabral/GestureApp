@@ -4,7 +4,7 @@ import com.example.gestureapp.R
 import com.example.gestureapp.model.BankProductItem
 
 const val CPF_SIZE = 11
-const val PASSWORD = "54837190"
+const val PASSWORD = "54831790"
 const val MAX_PASSWORD_SIZE  = PASSWORD.length
 const val KEY_OK = "OK"
 const val KEY_BACKSPACE = "\u232b"

@@ -19,7 +19,7 @@ fun PixMoneyScreen(
 ){
     CustomKeyboard(
         isTest =  isTest,
-        userActionEnum = UserActionEnum.KEYBOARD_PIX_CPF,
+        userActionEnum = UserActionEnum.KEYBOARD_PIX_MONEY,
         text = "Insira o valor",
         textField = textField,
         label = if (madeAttempt && isMoneyWrong) "Valor errado" else "Valor",

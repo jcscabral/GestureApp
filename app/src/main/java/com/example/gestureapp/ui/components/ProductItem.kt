@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -31,6 +30,7 @@ import com.example.gestureapp.ui.theme.md_theme_dark_secondary
 @JvmOverloads
 @Composable
 fun ProductItem(
+    isTest: Boolean,
     nameId: Int,
     imageVector: ImageVector,
     userActionEnum: UserActionEnum,
@@ -49,18 +49,17 @@ fun ProductItem(
                 .align(Alignment.CenterVertically)
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            AppGestureEvents.onPointerEvent(
-                                userActionEnum,
-                                event
-                            )
+                        if (isTest) {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                AppGestureEvents.onPointerEvent(
+                                    userActionEnum,
+                                    event
+                                )
+                            }
                         }
                     }
                 }
-//                .pointerInteropFilter() {
-//                    AppGestureEvents.onButtonMotionEvent(userActionEnum, it)
-//                }
         ) {
 
             Button(
@@ -95,9 +94,10 @@ fun ProductItem(
 @Composable
 fun Preview(){
     ProductItem(
+        isTest =  false,
         nameId = 0,
         imageVector = Icons.Default.Info ,
-        userActionEnum =  UserActionEnum.SWIPE_HOME,
+        userActionEnum =  UserActionEnum.SWIPE_HOME_BUTTON,
         onButtonClick = {}
     )
 }
